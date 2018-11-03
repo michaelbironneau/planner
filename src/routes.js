@@ -2,6 +2,7 @@ import React from "react";
 import Loadable from "react-loadable";
 
 import DefaultLayout from "./containers/DefaultLayout";
+import NewProject from "./views/NewProject/NewProject";
 
 function Loading() {
   return <div>Loading...</div>;
@@ -25,8 +26,14 @@ const User = Loadable({
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
   { path: "/", exact: true, name: "Home", component: DefaultLayout },
-  { path: "/dashboard", name: "Dashboard", component: Dashboard },
+  { path: "/dashboard", name: "Programme View", component: Dashboard },
   { path: "/users", exact: true, name: "Users", component: Users },
+  {
+    path: "/projects/new",
+    exact: true,
+    name: "New Project",
+    component: NewProject
+  },
   { path: "/users/:id", exact: true, name: "User Details", component: User }
 ];
 

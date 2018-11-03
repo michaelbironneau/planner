@@ -1,7 +1,7 @@
 export default {
   items: [
     {
-      name: "My Board",
+      name: "Programme View",
       url: "/dashboard",
       icon: "icon-calendar"
     },

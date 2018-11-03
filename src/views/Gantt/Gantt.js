@@ -5,6 +5,8 @@ import "dhtmlx-gantt/codebase/dhtmlxgantt.css";
 import "./plugin.js";
 //import "./grouping.js";
 import "./critical_path.js";
+import "./Gantt.scss";
+import "./progress_calculation.js";
 
 let resources = [
   { id: "0", text: "Alexandra" },
@@ -187,6 +189,15 @@ export default class Gantt extends Component {
     this.setZoom(this.props.zoom);
     this.setColumns(["text", "start_date", "owner", "duration", "add"]);
     gantt.config.highlight_critical_path = true;
+    //gantt.config.show_slack = true;
+    gantt.config.show_unscheduled = true;
+    gantt.templates.task_class = function(start, end, task) {
+      if (task.type === gantt.config.types.project) {
+        return "task-project";
+      } else {
+        return "task-task";
+      }
+    };
     return (
       <div
         ref={input => {

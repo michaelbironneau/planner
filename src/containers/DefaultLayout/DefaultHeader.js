@@ -9,6 +9,7 @@ import {
   NavLink
 } from "reactstrap";
 import PropTypes from "prop-types";
+import "./styles.scss";
 
 import {
   AppAsideToggler,
@@ -40,7 +41,7 @@ class DefaultHeader extends Component {
         <AppSidebarToggler className="d-md-down-none" display="lg" />
 
         <Nav className="d-md-down-none" navbar>
-          <NavItem className="px-3">
+          <NavItem className="px-3 nav-primary">
             <NavLink href="/">My Board</NavLink>
           </NavItem>
           <NavItem className="px-3">

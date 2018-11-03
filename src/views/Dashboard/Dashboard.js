@@ -2,33 +2,14 @@ import React, { Component } from "react";
 import Gantt from "../Gantt/Gantt";
 import "./Dashboard.scss";
 import data from "./data.json";
-
-/**let data = {
-  data: [
-    {
-      id: 1,
-      text: "Task #1",
-      start_date: "15-04-2017",
-      duration: 3,
-      progress: 0.6,
-      type: "project"
-    },
-    {
-      id: 2,
-      text: "Task #2",
-      start_date: "18-04-2017",
-      duration: 3,
-      progress: 0.4
-    }
-  ],
-  links: [{ id: 1, source: 1, target: 2, type: "0" }]
-}; */
+import { Button, Card, CardBody, CardHeader, Col, Row } from "reactstrap";
+import { Link } from "react-router-dom";
 
 class Dashboard extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      currentZoom: "Days",
+      currentZoom: "Months",
       messages: []
     };
     this.handleZoomChange = this.handleZoomChange.bind(this);
@@ -46,6 +27,8 @@ class Dashboard extends Component {
     }
     this.setState({ messages });
   }
+
+  addBlankProject() {}
 
   logTaskUpdate(id, mode, task) {
     let text = task && task.text ? ` (${task.text})` : "";
@@ -69,13 +52,25 @@ class Dashboard extends Component {
 
   render() {
     return (
-      <div className="gantt-container">
-        <Gantt
-          tasks={data}
-          zoom={this.state.currentZoom}
-          onTaskUpdated={this.logTaskUpdate}
-          onLinkUpdated={this.logLinkUpdate}
-        />
+      <div>
+        <Row className="align-items-left mb-1">
+          <Col sm xs="12" className="mt-3">
+            <Link to="/projects/new">
+              <Button color="primary">
+                <i className="icon-plus icons mr-1" />
+                Add project
+              </Button>
+            </Link>
+          </Col>
+        </Row>
+        <div className="gantt-container">
+          <Gantt
+            tasks={data}
+            zoom={this.state.currentZoom}
+            onTaskUpdated={this.logTaskUpdate}
+            onLinkUpdated={this.logLinkUpdate}
+          />
+        </div>
       </div>
     );
   }
