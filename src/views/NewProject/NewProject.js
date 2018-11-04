@@ -95,6 +95,11 @@ class NewProject extends Component {
     return this.state.tasks.map((task, index) => {
       return (
         <Row key={index}>
+          <Col xs="1" m="1">
+            <Button outline>
+              <i className="icon-link icons" />
+            </Button>
+          </Col>
           <Col xs="9" m="9">
             <FormGroup>
               <Input
@@ -105,7 +110,7 @@ class NewProject extends Component {
               />
             </FormGroup>
           </Col>
-          <Col xs="2" m="2">
+          <Col xs="1" m="1">
             <FormGroup>
               <Input
                 type="text"
@@ -167,15 +172,20 @@ class NewProject extends Component {
                   </h4>
                 </Col>
               </Row>
+
               {/* Tasks */}
               <Row>
-                <Col xs="9" m="9">
+                <Col xs="1" m="1">
+                  Links
+                </Col>
+                <Col xs="8" m="8">
                   <h6>Name</h6>
                 </Col>
                 <Col xs="2" m="2">
                   <h6>Effort (d)</h6>
                 </Col>
               </Row>
+
               {this.renderTasks()}
               {/* Save/cancel button */}
 
