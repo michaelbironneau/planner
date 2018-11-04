@@ -13,6 +13,10 @@ import {
 } from "reactstrap";
 import "./NewProject.scss";
 
+import { createProject } from "../../store/actions";
+import { connect } from "react-redux";
+import { newTask } from "../../models/task";
+
 class NewProject extends Component {
   constructor(props) {
     super(props);
@@ -24,7 +28,7 @@ class NewProject extends Component {
     this.onAddTask = this.onAddTask.bind(this);
     this.onRemoveTask = this.onRemoveTask.bind(this);
     this.onChangeTaskName = this.onChangeTaskName.bind(this);
-    this.onChangeTaskEffort = this.onChangeTaskEffort.bind(this);
+    this.onChangeTaskDuration = this.onChangeTaskDuration.bind(this);
     this.onChangeProjectName = this.onChangeProjectName.bind(this);
     this.onSaveProject = this.onSaveProject.bind(this);
     this.onResetProject = this.onResetProject.bind(this);
@@ -32,8 +36,8 @@ class NewProject extends Component {
 
   onAddTask() {
     this.state.tasks.push({
-      name: "",
-      effort: 1
+      text: "",
+      duration: 1
     });
     this.setState({ tasks: [...this.state.tasks] });
   }
@@ -48,9 +52,18 @@ class NewProject extends Component {
   onSaveProject() {
     if (this.state.name.length === 0) return;
     for (var i = 0; i < this.state.tasks.length; i++) {
-      if (this.state.tasks[i].name.length === 0) return;
+      if (this.state.tasks[i].text.length === 0) return;
     }
-    alert("Project saved!");
+    try {
+      this.props.createProject({
+        project: newTask({ text: this.state.name, type: "project" }),
+        tasks: this.state.tasks.map(task => newTask(task))
+      });
+      this.onResetProject();
+      this.props.history.push("/dashboard");
+    } catch (e) {
+      console.warn(e);
+    }
   }
 
   onChangeProjectName(newName) {
@@ -63,15 +76,15 @@ class NewProject extends Component {
   }
 
   onChangeTaskName(index, newName) {
-    this.state.tasks[index].name = newName;
+    this.state.tasks[index].text = newName;
     this.setState({ tasks: [...this.state.tasks] });
   }
 
-  onChangeTaskEffort(index, newEffort) {
-    if (!newEffort.match(/^-?\d*\.?\d*$/)) {
+  onChangeTaskDuration(index, newDuration) {
+    if (!newDuration.match(/^-?\d*\.?\d*$/)) {
       return;
     }
-    this.state.tasks[index].effort = newEffort;
+    this.state.tasks[index].duration = newDuration;
     this.setState({ tasks: [...this.state.tasks] });
   }
 
@@ -95,28 +108,23 @@ class NewProject extends Component {
     return this.state.tasks.map((task, index) => {
       return (
         <Row key={index}>
-          <Col xs="1" m="1">
-            <Button outline>
-              <i className="icon-link icons" />
-            </Button>
-          </Col>
           <Col xs="9" m="9">
             <FormGroup>
               <Input
                 type="text"
                 placeholder="Task description"
                 onChange={e => this.onChangeTaskName(index, e.target.value)}
-                value={task.name}
+                value={task.text}
               />
             </FormGroup>
           </Col>
-          <Col xs="1" m="1">
+          <Col xs="2" m="2">
             <FormGroup>
               <Input
                 type="text"
                 placeholder="Effort (days)"
-                value={task.effort}
-                onChange={e => this.onChangeTaskEffort(index, e.target.value)}
+                value={task.duration}
+                onChange={e => this.onChangeTaskDuration(index, e.target.value)}
               />
             </FormGroup>
           </Col>
@@ -175,10 +183,7 @@ class NewProject extends Component {
 
               {/* Tasks */}
               <Row>
-                <Col xs="1" m="1">
-                  Links
-                </Col>
-                <Col xs="8" m="8">
+                <Col xs="9" m="9">
                   <h6>Name</h6>
                 </Col>
                 <Col xs="2" m="2">
@@ -220,4 +225,7 @@ class NewProject extends Component {
   }
 }
 
-export default NewProject;
+export default connect(
+  null,
+  { createProject }
+)(NewProject);

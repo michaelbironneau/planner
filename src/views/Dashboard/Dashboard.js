@@ -1,9 +1,16 @@
 import React, { Component } from "react";
 import Gantt from "../Gantt/Gantt";
 import "./Dashboard.scss";
-import data from "./data.json";
 import { Button, Card, CardBody, CardHeader, Col, Row } from "reactstrap";
 import { Link } from "react-router-dom";
+import { loadAllTasks } from "../../store/actions";
+import { getTasks } from "../../store/selectors";
+import { connect } from "react-redux";
+
+const mapStateToProps = state => {
+  const tasks = getTasks(state);
+  return { tasks: tasks.tasks, links: tasks.links };
+};
 
 class Dashboard extends Component {
   constructor(props) {
@@ -27,6 +34,8 @@ class Dashboard extends Component {
     }
     this.setState({ messages });
   }
+
+  componentDidMount() {}
 
   addBlankProject() {}
 
@@ -52,7 +61,7 @@ class Dashboard extends Component {
 
   render() {
     return (
-      <div>
+      <div className="animated fadeIn">
         <Row className="align-items-left mb-1">
           <Col sm xs="12" className="mt-3">
             <Link to="/projects/new">
@@ -65,7 +74,10 @@ class Dashboard extends Component {
         </Row>
         <div className="gantt-container">
           <Gantt
-            tasks={data}
+            tasks={{
+              data: JSON.parse(JSON.stringify(this.props.tasks)),
+              links: this.props.links
+            }}
             zoom={this.state.currentZoom}
             onTaskUpdated={this.logTaskUpdate}
             onLinkUpdated={this.logLinkUpdate}
@@ -76,4 +88,4 @@ class Dashboard extends Component {
   }
 }
 
-export default Dashboard;
+export default connect(mapStateToProps)(Dashboard);

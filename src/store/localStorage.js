@@ -1,29 +1,36 @@
-let nextTaskId = 0;
-let tasks = [];
-let links = [];
-let users = [];
+import data from "./testdata.json";
 
-// Add new task and return its ID
-export const addTaskReturningId = task => {
-  tasks.push({
-    id: ++nextTaskId,
-    task
-  });
-  return nextTaskId;
-};
+let nextTaskId = 1234;
+let tasks = data.data;
+let links = data.links;
 
-// Remove task given ID. Return true if successful.
-export const removeTaskById = taskId => {
-  const index = tasks.findIndex(task => task.id == taskId);
-  if (index === -1) return false;
-  tasks.splice(index, 1);
-  return true;
-};
+export class LocalStore {
+  loadStore = () => {
+    return {
+      tasks: tasks,
+      links: links
+    };
+  };
 
-// Update task. Returns true if successful.
-export const updateTask = task => {
-  const index = tasks.findIndex(task => task.id == task.id);
-  if (index === -1) return false;
-  tasks[index] = task;
-  return true;
-};
+  addTaskReturningId = task => {
+    tasks.push({
+      id: ++nextTaskId,
+      task
+    });
+    return nextTaskId;
+  };
+
+  removeTaskById = taskId => {
+    const index = tasks.findIndex(task => task.id == taskId);
+    if (index === -1) return false;
+    tasks.splice(index, 1);
+    return true;
+  };
+
+  updateTask = task => {
+    const index = tasks.findIndex(task => task.id == task.id);
+    if (index === -1) return false;
+    tasks[index] = task;
+    return true;
+  };
+}

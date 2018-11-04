@@ -50,27 +50,6 @@ export default class Gantt extends Component {
     }
   }
 
-  toggleGroups() {
-    gantt.$groupMode = !gantt.$groupMode;
-    if (gantt.$groupMode) {
-      var groups = resources.map(function(item) {
-        var group = gantt.copy(item);
-        group.group_id = group.id;
-        group.id = gantt.uid();
-        return group;
-      });
-
-      gantt.groupBy({
-        groups: groups,
-        relation_property: gantt.config.resource_property,
-        group_id: "group_id",
-        group_text: "text"
-      });
-    } else {
-      gantt.groupBy(false);
-    }
-  }
-
   //Set columns from an array of names eg ["name", "duration", "owner"]
   setColumns(cols) {
     let c = [];
@@ -142,6 +121,11 @@ export default class Gantt extends Component {
     }
     gantt.ganttEventsInitialized = true;
 
+    gantt.attachEvent("onLightboxSave", function(id, task, is_new) {
+      task.unscheduled = !task.start_date;
+      return true;
+    });
+
     gantt.attachEvent("onAfterTaskAdd", (id, task) => {
       if (this.props.onTaskUpdated) {
         this.props.onTaskUpdated(id, "inserted", task);
@@ -177,6 +161,11 @@ export default class Gantt extends Component {
         this.props.onLinkUpdated(id, "deleted");
       }
     });
+
+    gantt.attachEvent("onError", errorMessage => {
+      debugger;
+      return true;
+    });
   }
 
   componentDidMount() {
@@ -191,6 +180,18 @@ export default class Gantt extends Component {
     gantt.config.highlight_critical_path = true;
     //gantt.config.show_slack = true;
     gantt.config.show_unscheduled = true;
+    gantt.locale.labels.time_enable_button = "Schedule";
+    gantt.locale.labels.time_disable_button = "Unschedule";
+    gantt.config.lightbox.sections = [
+      {
+        name: "description",
+        height: 70,
+        map_to: "text",
+        type: "textarea",
+        focus: true
+      },
+      { name: "time", map_to: "auto", button: true, type: "duration_optional" }
+    ];
     gantt.templates.task_class = function(start, end, task) {
       if (task.type === gantt.config.types.project) {
         return "task-project";

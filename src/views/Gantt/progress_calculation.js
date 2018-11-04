@@ -50,26 +50,54 @@
 })();
 
 // recalculate progress of summary tasks when the progress of subtasks changes
+// also recalculate total duration when the duration of subtasks changes
+// also recaculate the end date
 (function dynamicProgress() {
   function calculateSummaryProgress(task) {
-    if (task.type != gantt.config.types.project) return task.progress;
+    if (task.type != gantt.config.types.project)
+      return {
+        progress: task.progress,
+        duration: task.duration,
+        end_date: task.end_date
+      };
     var totalToDo = 0;
     var totalDone = 0;
+    var totalDuration = 0;
+    var latestEndDate = new Date(0);
     gantt.eachTask(function(child) {
+      if (child.start_date) {
+        const s = new Date(child.start_date.getTime());
+        s.setDate(s.getDate() + child.duration);
+        latestEndDate =
+          latestEndDate.getMilliseconds() > s.getMilliseconds()
+            ? latestEndDate
+            : s;
+      }
       if (child.type != gantt.config.types.project) {
         totalToDo += child.duration;
         totalDone += (child.progress || 0) * child.duration;
+        totalDuration += child.duration || 0;
       }
     }, task.id);
-    if (!totalToDo) return 0;
-    else return totalDone / totalToDo;
+    if (!totalToDo)
+      return { progress: 0, duration: task.duration, end_date: task.end_date };
+    else
+      return {
+        progress: totalDone / totalToDo,
+        duration: totalDuration,
+        end_date: latestEndDate
+      };
   }
 
   function refreshSummaryProgress(id, submit) {
     if (!gantt.isTaskExists(id)) return;
 
     var task = gantt.getTask(id);
-    task.progress = calculateSummaryProgress(task);
+    const summary = calculateSummaryProgress(task);
+
+    task.progress = summary.progress;
+    task.duration = summary.duration;
+    task.end_date = summary.end_date;
 
     if (!submit) {
       gantt.refreshTask(id);
@@ -84,7 +112,10 @@
 
   gantt.attachEvent("onParse", function() {
     gantt.eachTask(function(task) {
-      task.progress = calculateSummaryProgress(task);
+      const summary = calculateSummaryProgress(task);
+      task.progress = summary.progress;
+      task.duration = summary.duration;
+      task.end_date = summary.end_date;
     });
   });
 
