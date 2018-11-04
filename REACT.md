@@ -1,3 +1,0 @@
-# Planner
-
-Work in progress.
