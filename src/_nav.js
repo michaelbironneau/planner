@@ -16,8 +16,8 @@ export default {
           icon: "icon-plus"
         },
         {
-          name: "Dashboard",
-          url: "/projects/dashboard",
+          name: "My Board",
+          url: "/projects/my-board",
           icon: "icon-speedometer"
         }
       ]

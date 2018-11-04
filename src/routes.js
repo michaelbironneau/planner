@@ -3,6 +3,7 @@ import Loadable from "react-loadable";
 
 import DefaultLayout from "./containers/DefaultLayout";
 import NewProject from "./views/NewProject/NewProject";
+import MyBoard from "./views/MyBoard/MyBoard";
 
 function Loading() {
   return <div>Loading...</div>;
@@ -33,6 +34,12 @@ const routes = [
     exact: true,
     name: "New Project",
     component: NewProject
+  },
+  {
+    path: "/projects/my-board",
+    exact: true,
+    name: "My Board",
+    component: MyBoard
   },
   { path: "/users/:id", exact: true, name: "User Details", component: User }
 ];
