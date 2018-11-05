@@ -26,7 +26,7 @@ export default function(state = initialState, action) {
         return JSON.parse(JSON.stringify(state));
       }
       state.tasks[index] = action.payload;
-      return { tasks: state.tasks, links: state.links };
+      return { tasks: JSON.parse(JSON.stringify(state.tasks)), links: JSON.parse(JSON.stringify(state.links)) };
     case DELETE_TASK:
       index = state.tasks.findIndex(task => task.id == action.payload.id);
       if (index === -1) {

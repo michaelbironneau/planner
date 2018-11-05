@@ -7,6 +7,8 @@ import "./plugin.js";
 import "./critical_path.js";
 import "./Gantt.scss";
 import "./progress_calculation.js";
+import { connect } from "react-redux";
+import { createTask, updateTask, deleteTask} from '../../store/actions'
 
 let resources = [
   { id: "0", text: "Alexandra" },
@@ -20,7 +22,7 @@ let resources = [
   { id: "8", text: "Irene" }
 ];
 
-export default class Gantt extends Component {
+class Gantt extends Component {
   setZoom(value) {
     switch (value) {
       case "Hours":
@@ -115,6 +117,15 @@ export default class Gantt extends Component {
     gantt.render();
   }
 
+  stripHiddenProps(task){
+    const ret = {};
+    for (var prop in task){
+      if (prop.startsWith('$')) continue;
+      ret[prop] = task[prop];
+    }
+    return ret;
+  }
+
   initGanttEvents() {
     if (gantt.ganttEventsInitialized) {
       return;
@@ -127,21 +138,18 @@ export default class Gantt extends Component {
     });
 
     gantt.attachEvent("onAfterTaskAdd", (id, task) => {
-      if (this.props.onTaskUpdated) {
-        this.props.onTaskUpdated(id, "inserted", task);
-      }
+      this.props.createTask(this.stripHiddenProps(task));
+      //console.log('Add');
     });
 
     gantt.attachEvent("onAfterTaskUpdate", (id, task) => {
-      if (this.props.onTaskUpdated) {
-        this.props.onTaskUpdated(id, "updated", task);
-      }
+       //this.props.updateTask(this.stripHiddenProps(task));
+      //console.log('Update', task, JSON.parse(JSON.stringify(task)));
     });
 
     gantt.attachEvent("onAfterTaskDelete", id => {
-      if (this.props.onTaskUpdated) {
-        this.props.onTaskUpdated(id, "deleted");
-      }
+      this.props.deleteTask(id);
+      //console.log('Delete');
     });
 
     gantt.attachEvent("onAfterLinkAdd", (id, link) => {
@@ -163,15 +171,31 @@ export default class Gantt extends Component {
     });
 
     gantt.attachEvent("onError", errorMessage => {
-      debugger;
+      console.warn('Gantt error', errorMessage);
       return true;
     });
+  }
+
+  parseDatesInTasks(){
+    return {
+      links: this.props.tasks.links,
+      data: this.props.tasks.data.map(task => {
+        const c = task;
+        if (task.start_date){
+          c.start_date = new Date(task.start_date);
+        }
+        if (task.end_date){
+          c.end_date = new Date(task.end_date);
+        }
+        return c;
+      })
+    }
   }
 
   componentDidMount() {
     this.initGanttEvents();
     gantt.init(this.ganttContainer);
-    gantt.parse(this.props.tasks);
+    gantt.parse(this.parseDatesInTasks(this.props.tasks));
   }
 
   render() {
@@ -209,3 +233,6 @@ export default class Gantt extends Component {
     );
   }
 }
+
+export default connect (
+  null, {createTask, updateTask, deleteTask})(Gantt);
