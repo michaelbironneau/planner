@@ -5,10 +5,10 @@ import { action } from "@storybook/addon-actions";
 import addons, { mockChannel } from "@storybook/addons";
 
 import { DragDropContext } from "react-beautiful-dnd";
-import QuoteList from "./QuoteList";
+import TaskList from "./TaskList";
 import { colors, grid } from "./constants";
-import { reorderQuoteMap } from "./reorder";
-import { quotes } from "./quotes";
+import { reorderTaskMap } from "./reorder";
+import { tasks } from "./tasks";
 
 addons.setChannel(mockChannel());
 
@@ -56,18 +56,18 @@ const PushDown = styled("div")`
   height: 200px;
 `;
 
-const initialQuotes = {
-  todo: quotes.slice(0, 4),
-  inprog: quotes.slice(4, 6),
-  done: quotes.slice(6, 9)
+const initialTasks = {
+  todo: tasks.slice(0, 4),
+  inprog: tasks.slice(4, 6),
+  done: tasks.slice(6, 9)
 };
 
-export default class QuoteApp extends Component {
+export default class TaskApp extends Component {
   /* eslint-disable react/sort-comp */
 
   state = {
-    //quoteMap: this.props.initial
-    quoteMap: initialQuotes
+    //taskMap: this.props.initial
+    taskMap: initialTasks
   };
 
   onDragStart = initial => {
@@ -89,8 +89,8 @@ export default class QuoteApp extends Component {
     const destination = result.destination;
 
     this.setState(
-      reorderQuoteMap({
-        quoteMap: this.state.quoteMap,
+      reorderTaskMap({
+        taskMap: this.state.taskMap,
         source,
         destination
       })
@@ -111,7 +111,7 @@ export default class QuoteApp extends Component {
   };
 
   render() {
-    const { quoteMap } = this.state;
+    const { taskMap } = this.state;
     const disabledDroppable = "TODO";
 
     return (
@@ -122,30 +122,30 @@ export default class QuoteApp extends Component {
         <Root className="list-container">
           <HorizontalScrollContainer>
             <Column>
-              <QuoteList
+              <TaskList
                 title="Todo"
                 listId="todo"
                 listType="card"
                 isDropDisabled={disabledDroppable === "todo"}
-                quotes={quoteMap.todo}
+                tasks={taskMap.todo}
               />
             </Column>
             <Column>
-              <QuoteList
+              <TaskList
                 title="In Progress"
                 listId="inprog"
                 listType="card"
                 isDropDisabled={disabledDroppable === "inprog"}
-                quotes={quoteMap.inprog}
+                tasks={taskMap.inprog}
               />
             </Column>
             <Column>
-              <QuoteList
+              <TaskList
                 title="Done"
                 listId="done"
                 listType="card"
                 isDropDisabled={disabledDroppable === "done"}
-                quotes={quoteMap.done}
+                tasks={taskMap.done}
               />
             </Column>
           </HorizontalScrollContainer>

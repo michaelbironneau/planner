@@ -70,7 +70,7 @@ const Content = styled("div")`
   flex-direction: column;
 `;
 
-const BlockQuote = styled("div")`
+const BlockTask = styled("div")`
   &::before {
     content: open-quote;
   }
@@ -85,7 +85,7 @@ const Footer = styled("div")`
   margin-top: ${grid}px;
 `;
 
-const QuoteId = styled("small")`
+const TaskId = styled("small")`
   flex-grow: 0;
   margin: 0;
 `;
@@ -104,24 +104,24 @@ const Attribution = styled("small")`
 // Need to be super sure we are not relying on PureComponent here for
 // things we should be doing in the selector as we do not know if consumers
 // will be using PureComponent
-export default class QuoteItem extends React.PureComponent {
+export default class TaskItem extends React.PureComponent {
   render() {
-    const { quote, isDragging, isGroupedOver, provided } = this.props;
+    const { task, isDragging, isGroupedOver, provided } = this.props;
 
     return (
       <Container
-        href={quote.author.url}
+        href={task.author.url}
         isDragging={isDragging}
         isGroupedOver={isGroupedOver}
         innerRef={provided.innerRef}
         {...provided.draggableProps}
         {...provided.dragHandleProps}
       >
-        <Avatar src={quote.author.avatarUrl} alt={quote.author.name} />
+        <Avatar src={task.author.avatarUrl} alt={task.author.name} />
         <Content>
-          <BlockQuote>{quote.content}</BlockQuote>
+          <BlockTask>{task.content}</BlockTask>
           <Footer>
-            <QuoteId>({quote.id})</QuoteId>
+            <TaskId>({task.id})</TaskId>
             <Attribution>TEMP</Attribution>
           </Footer>
         </Content>

@@ -28,7 +28,7 @@ const princess = {
 
 export const authors = [jake, BMO, finn, princess];
 
-export const quotes = [
+export const tasks = [
   {
     id: "1",
     content: "Sometimes life is scary and dark",

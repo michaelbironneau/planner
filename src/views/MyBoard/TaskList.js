@@ -2,7 +2,7 @@
 import React from "react";
 import styled from "react-emotion";
 import { Droppable, Draggable } from "react-beautiful-dnd";
-import QuoteItem from "./QuoteItem";
+import TaskItem from "./TaskItem";
 import { grid, colors } from "./constants";
 import Title from "./Title";
 
@@ -43,9 +43,9 @@ const ScrollContainer = styled("div")`
 const Container = styled("div")``;
 /* stylelint-enable */
 
-class InnerQuoteList extends React.Component {
+class InnerTaskList extends React.Component {
   shouldComponentUpdate(nextProps) {
-    if (nextProps.quotes !== this.props.quotes) {
+    if (nextProps.tasks !== this.props.tasks) {
       return true;
     }
 
@@ -53,12 +53,12 @@ class InnerQuoteList extends React.Component {
   }
 
   render() {
-    return this.props.quotes.map((quote, index) => (
-      <Draggable key={quote.id} draggableId={quote.id} index={index}>
+    return this.props.tasks.map((task, index) => (
+      <Draggable key={task.id} draggableId={task.id} index={index}>
         {(dragProvided, dragSnapshot) => (
-          <QuoteItem
-            key={quote.id}
-            quote={quote}
+          <TaskItem
+            key={task.id}
+            task={task}
             isDragging={dragSnapshot.isDragging}
             isGroupedOver={Boolean(dragSnapshot.combineTargetFor)}
             provided={dragProvided}
@@ -71,14 +71,14 @@ class InnerQuoteList extends React.Component {
 
 class InnerList extends React.Component {
   render() {
-    const { quotes, dropProvided } = this.props;
+    const { tasks, dropProvided } = this.props;
     const title = this.props.title ? <Title>{this.props.title}</Title> : null;
 
     return (
       <Container>
         {title}
         <DropZone innerRef={dropProvided.innerRef}>
-          <InnerQuoteList quotes={quotes} />
+          <InnerTaskList tasks={tasks} />
           {dropProvided.placeholder}
         </DropZone>
       </Container>
@@ -86,7 +86,7 @@ class InnerList extends React.Component {
   }
 }
 
-export default class QuoteList extends React.Component {
+export default class TaskList extends React.Component {
   static defaultProps = {
     listId: "LIST"
   };
@@ -100,7 +100,7 @@ export default class QuoteList extends React.Component {
       listId,
       listType,
       style,
-      quotes,
+      tasks,
       title
     } = this.props;
 
@@ -122,14 +122,14 @@ export default class QuoteList extends React.Component {
             {internalScroll ? (
               <ScrollContainer style={scrollContainerStyle}>
                 <InnerList
-                  quotes={quotes}
+                  tasks={tasks}
                   title={title}
                   dropProvided={dropProvided}
                 />
               </ScrollContainer>
             ) : (
               <InnerList
-                quotes={quotes}
+                tasks={tasks}
                 title={title}
                 dropProvided={dropProvided}
               />
