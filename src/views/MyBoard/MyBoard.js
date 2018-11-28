@@ -1,105 +1,156 @@
+// @flow
 import React, { Component } from "react";
-import ReactDOM from "react-dom";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import styled from "react-emotion";
+import { action } from "@storybook/addon-actions";
+import addons, { mockChannel } from "@storybook/addons";
 
-// fake data generator
-const getItems = count =>
-  Array.from({ length: count }, (v, k) => k).map(k => ({
-    id: `item-${k}`,
-    content: `item ${k}`
-  }));
+import { DragDropContext } from "react-beautiful-dnd";
+import QuoteList from "./QuoteList";
+import { colors, grid } from "./constants";
+import { reorderQuoteMap } from "./reorder";
+import { quotes } from "./quotes";
 
-// a little function to help us with reordering the result
-const reorder = (list, startIndex, endIndex) => {
-  const result = Array.from(list);
-  const [removed] = result.splice(startIndex, 1);
-  result.splice(endIndex, 0, removed);
+addons.setChannel(mockChannel());
 
-  return result;
+const publishOnDragStart = action("onDragStart");
+const publishOnDragEnd = action("onDragEnd");
+
+const Root = styled("div")`
+  //background-color: ${colors.blue.deep};
+  box-sizing: border-box;
+  padding: ${grid * 2}px;
+  min-height: 100vh;
+
+  /* flexbox */
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+`;
+
+const Column = styled("div")`
+  margin: 0 ${grid * 2}px;
+`;
+
+const HorizontalScrollContainer = styled("div")`
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  //background: rgba(0, 0, 0, 0.1);
+  padding: ${grid}px;
+  //max-width: 400px;
+  overflow: auto;
+`;
+
+const VerticalScrollContainer = styled("div")`
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  background: rgba(0, 0, 0, 0.1);
+  padding: ${grid}px;
+  max-height: 800px;
+  overflow: auto;
+`;
+
+const PushDown = styled("div")`
+  height: 200px;
+`;
+
+const initialQuotes = {
+  todo: quotes.slice(0, 4),
+  inprog: quotes.slice(4, 6),
+  done: quotes.slice(6, 9)
 };
 
-const grid = 8;
+export default class QuoteApp extends Component {
+  /* eslint-disable react/sort-comp */
 
-const getItemStyle = (isDragging, draggableStyle) => ({
-  // some basic styles to make the items look a bit nicer
-  userSelect: "none",
-  padding: grid * 2,
-  margin: `0 0 ${grid}px 0`,
+  state = {
+    //quoteMap: this.props.initial
+    quoteMap: initialQuotes
+  };
 
-  // change background colour if dragging
-  background: isDragging ? "lightgreen" : "grey",
+  onDragStart = initial => {
+    publishOnDragStart(initial);
+    // this.setState({
+    //   disabledDroppable: this.getDisabledDroppable(initial.source.droppableId),
+    // });
+  };
 
-  // styles we need to apply on draggables
-  ...draggableStyle
-});
+  onDragEnd = result => {
+    publishOnDragEnd(result);
 
-const getListStyle = isDraggingOver => ({
-  background: isDraggingOver ? "lightblue" : "lightgrey",
-  padding: grid,
-  width: 250
-});
-
-class MyBoard extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      items: getItems(10)
-    };
-    this.onDragEnd = this.onDragEnd.bind(this);
-  }
-
-  onDragEnd(result) {
-    // dropped outside the list
+    // dropped nowhere
     if (!result.destination) {
       return;
     }
 
-    const items = reorder(
-      this.state.items,
-      result.source.index,
-      result.destination.index
+    const source = result.source;
+    const destination = result.destination;
+
+    this.setState(
+      reorderQuoteMap({
+        quoteMap: this.state.quoteMap,
+        source,
+        destination
+      })
     );
+  };
 
-    this.setState({
-      items
-    });
-  }
+  // TODO
+  getDisabledDroppable = sourceDroppable => {
+    if (!sourceDroppable) {
+      return null;
+    }
 
-  // Normally you would want to split things out into separate components.
-  // But in this example everything is just done in one place for simplicity
+    const droppables = ["alpha", "beta", "gamma", "delta"];
+    const sourceIndex = droppables.indexOf(sourceDroppable);
+    const disabledDroppableIndex = (sourceIndex + 1) % droppables.length;
+
+    return droppables[disabledDroppableIndex];
+  };
+
   render() {
+    const { quoteMap } = this.state;
+    const disabledDroppable = "TODO";
+
     return (
-      <DragDropContext onDragEnd={this.onDragEnd}>
-        <Droppable droppableId="droppable">
-          {(provided, snapshot) => (
-            <div
-              ref={provided.innerRef}
-              style={getListStyle(snapshot.isDraggingOver)}
-            >
-              {this.state.items.map((item, index) => (
-                <Draggable key={item.id} draggableId={item.id} index={index}>
-                  {(provided, snapshot) => (
-                    <div
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                      style={getItemStyle(
-                        snapshot.isDragging,
-                        provided.draggableProps.style
-                      )}
-                    >
-                      {item.content}
-                    </div>
-                  )}
-                </Draggable>
-              ))}
-              {provided.placeholder}
-            </div>
-          )}
-        </Droppable>
+      <DragDropContext
+        onDragStart={this.onDragStart}
+        onDragEnd={this.onDragEnd}
+      >
+        <Root className="list-container">
+          <HorizontalScrollContainer>
+            <Column>
+              <QuoteList
+                title="Todo"
+                listId="todo"
+                listType="card"
+                isDropDisabled={disabledDroppable === "todo"}
+                quotes={quoteMap.todo}
+              />
+            </Column>
+            <Column>
+              <QuoteList
+                title="In Progress"
+                listId="inprog"
+                listType="card"
+                isDropDisabled={disabledDroppable === "inprog"}
+                quotes={quoteMap.inprog}
+              />
+            </Column>
+            <Column>
+              <QuoteList
+                title="Done"
+                listId="done"
+                listType="card"
+                isDropDisabled={disabledDroppable === "done"}
+                quotes={quoteMap.done}
+              />
+            </Column>
+          </HorizontalScrollContainer>
+        </Root>
       </DragDropContext>
     );
   }
 }
-
-export default MyBoard;
