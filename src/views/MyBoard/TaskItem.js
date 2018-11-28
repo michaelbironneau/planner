@@ -70,22 +70,14 @@ const Content = styled("div")`
   flex-direction: column;
 `;
 
-const BlockTask = styled("div")`
-  &::before {
-    content: open-quote;
-  }
-
-  &::after {
-    content: close-quote;
-  }
-`;
+const BlockTask = styled("div")``;
 
 const Footer = styled("div")`
   display: flex;
   margin-top: ${grid}px;
 `;
 
-const TaskId = styled("small")`
+const TaskSpan = styled("small")`
   flex-grow: 0;
   margin: 0;
 `;
@@ -110,19 +102,18 @@ export default class TaskItem extends React.PureComponent {
 
     return (
       <Container
-        href={task.author.url}
+        //href={task.author.url}
         isDragging={isDragging}
         isGroupedOver={isGroupedOver}
         innerRef={provided.innerRef}
         {...provided.draggableProps}
         {...provided.dragHandleProps}
       >
-        <Avatar src={task.author.avatarUrl} alt={task.author.name} />
         <Content>
-          <BlockTask>{task.content}</BlockTask>
+          <BlockTask>{task.name}</BlockTask>
           <Footer>
-            <TaskId>({task.id})</TaskId>
-            <Attribution>TEMP</Attribution>
+            <TaskSpan>{task.span}</TaskSpan>
+            <Attribution>{task.project.name}</Attribution>
           </Footer>
         </Content>
       </Container>

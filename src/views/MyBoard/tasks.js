@@ -1,93 +1,82 @@
-const jake = {
-  id: "1",
-  name: "Jake",
-  url: "http://adventuretime.wikia.com/wiki/Jake",
-  avatarUrl: "https://68.media.tumblr.com/avatar_1f7bdbbeb59c_128.png"
+const proj1 = {
+  name: "Project 1"
 };
 
-const BMO = {
-  id: "2",
-  name: "BMO",
-  url: "http://adventuretime.wikia.com/wiki/BMO",
-  avatarUrl: "https://68.media.tumblr.com/avatar_1a34fe6de498_128.png"
+const proj2 = {
+  name: "Project 2"
 };
-
-const finn = {
-  id: "3",
-  name: "Finn",
-  url: "http://adventuretime.wikia.com/wiki/Finn",
-  avatarUrl: "https://68.media.tumblr.com/avatar_09404f3287c6_128.png"
-};
-
-const princess = {
-  id: "4",
-  name: "Princess bubblegum",
-  url: "http://adventuretime.wikia.com/wiki/Princess_Bubblegum",
-  avatarUrl: "https://68.media.tumblr.com/avatar_ec98529441c4_128.png"
-};
-
-export const authors = [jake, BMO, finn, princess];
 
 export const tasks = [
   {
     id: "1",
-    content: "Sometimes life is scary and dark",
-    author: BMO
+    name: "Sometimes life is scary and dark",
+    project: proj1,
+    span: "2018-11-01 to 2018-11-02"
   },
   {
     id: "2",
-    content:
+    name:
       "Sucking at something is the first step towards being sorta good at something.",
-    author: jake
+    project: proj1,
+    span: "2018-11-01 to 2018-11-02"
   },
   {
     id: "3",
-    content: "You got to focus on what's real, man",
-    author: jake
+    name: "You got to focus on what's real, man",
+    project: proj1,
+    span: "2018-11-01 to 2018-11-02"
   },
   {
     id: "4",
-    content: "Is that where creativity comes from? From sad biz?",
-    author: finn
+    name: "Is that where creativity comes from? From sad biz?",
+    project: proj2,
+    span: "2018-11-01 to 2018-11-02"
   },
   {
     id: "5",
-    content: "Homies help homies. Always",
-    author: finn
+    name: "Homies help homies. Always",
+    project: proj2,
+    span: "2018-11-01 to 2018-11-02"
   },
   {
     id: "6",
-    content: "Responsibility demands sacrifice",
-    author: princess
+    name: "Responsibility demands sacrifice",
+    project: proj2,
+    span: "2018-11-01 to 2018-11-02"
   },
   {
     id: "7",
-    content: "That's it! The answer was so simple, I was too smart to see it!",
-    author: princess
+    name: "That's it! The answer was so simple, I was too smart to see it!",
+    project: proj1,
+    span: "2018-11-01 to 2018-11-02"
   },
   {
     id: "8",
-    content: "People make mistakes. It’s a part of growing up",
-    author: finn
+    name: "People make mistakes. It’s a part of growing up",
+    project: proj1,
+    span: "2018-11-01 to 2018-11-02"
   },
   {
     id: "9",
-    content: "Don't you always call sweatpants 'give up on life pants,' Jake?",
-    author: finn
+    name: "Don't you always call sweatpants 'give up on life pants,' Jake?",
+    project: proj2,
+    span: "2018-11-01 to 2018-11-02"
   },
   {
     id: "10",
-    content: "I should not have drunk that much tea!",
-    author: princess
+    name: "I should not have drunk that much tea!",
+    project: proj1
   },
   {
     id: "11",
-    content: "Please! I need the real you!",
-    author: princess
+    name: "Please! I need the real you!",
+    project: proj1,
+    span: "2018-11-01 to 2018-11-02"
   },
   {
     id: "12",
-    content: "Haven't slept for a solid 83 hours, but, yeah, I'm good.",
-    author: princess
+    name: "Haven't slept for a solid 83 hours, but, yeah, I'm good.",
+    project: proj1,
+    span: "2018-11-01 to 2018-11-02"
   }
 ];
