@@ -103,7 +103,7 @@ export default class TaskApp extends Component {
       return null;
     }
 
-    const droppables = ["alpha", "beta", "gamma", "delta"];
+    const droppables = ["todo", "inprog", "done"];
     const sourceIndex = droppables.indexOf(sourceDroppable);
     const disabledDroppableIndex = (sourceIndex + 1) % droppables.length;
 
@@ -123,6 +123,7 @@ export default class TaskApp extends Component {
           <HorizontalScrollContainer>
             <Column>
               <TaskList
+                color="#B29CA3"
                 title="Todo"
                 listId="todo"
                 listType="card"
@@ -132,6 +133,7 @@ export default class TaskApp extends Component {
             </Column>
             <Column>
               <TaskList
+                color="#FFF9B3"
                 title="In Progress"
                 listId="inprog"
                 listType="card"
@@ -141,6 +143,7 @@ export default class TaskApp extends Component {
             </Column>
             <Column>
               <TaskList
+                color="#77BACC"
                 title="Done"
                 listId="done"
                 listType="card"

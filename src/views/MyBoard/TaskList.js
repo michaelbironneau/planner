@@ -5,10 +5,11 @@ import { Droppable, Draggable } from "react-beautiful-dnd";
 import TaskItem from "./TaskItem";
 import { grid, colors } from "./constants";
 import Title from "./Title";
+import { lighten, darken } from "polished";
 
 const Wrapper = styled("div")`
-  background-color: ${({ isDraggingOver }) =>
-    isDraggingOver ? colors.blue.lighter : colors.blue.light};
+  background-color: ${({ isDraggingOver, backgroundColor }) =>
+    isDraggingOver ? lighten(0.1, backgroundColor) : backgroundColor};
   display: flex;
   flex-direction: column;
   opacity: ${({ isDropDisabled }) => (isDropDisabled ? 0.5 : "inherit")};
@@ -101,7 +102,8 @@ export default class TaskList extends React.Component {
       listType,
       style,
       tasks,
-      title
+      title,
+      color
     } = this.props;
 
     return (
@@ -114,6 +116,7 @@ export default class TaskList extends React.Component {
       >
         {(dropProvided, dropSnapshot) => (
           <Wrapper
+            backgroundColor={color}
             style={style}
             isDraggingOver={dropSnapshot.isDraggingOver}
             isDropDisabled={isDropDisabled}
