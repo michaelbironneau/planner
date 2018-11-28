@@ -53,40 +53,59 @@
 // also recalculate total duration when the duration of subtasks changes
 // also recaculate the end date
 (function dynamicProgress() {
+  const _MS_PER_DAY = 1000 * 60 * 60 * 24;
+  function dateDiffInDays(a, b) {
+    // Discard the time and time-zone information.
+    const utc1 = Date.UTC(a.getFullYear(), a.getMonth(), a.getDate());
+    const utc2 = Date.UTC(b.getFullYear(), b.getMonth(), b.getDate());
+  
+    return Math.floor((utc2 - utc1) / _MS_PER_DAY);
+  }
   function calculateSummaryProgress(task) {
     if (task.type != gantt.config.types.project)
       return {
         progress: task.progress,
         duration: task.duration,
-        end_date: task.end_date
+        end_date: task.end_date,
+        start_date: task.start_date
       };
     var totalToDo = 0;
     var totalDone = 0;
     var totalDuration = 0;
     var latestEndDate = new Date(0);
+    var earliestStartDate = null; //max date
     gantt.eachTask(function(child) {
-      if (child.start_date) {
-        const s = new Date(child.start_date.getTime());
-        s.setDate(s.getDate() + child.duration);
-        latestEndDate =
-          latestEndDate.getMilliseconds() > s.getMilliseconds()
-            ? latestEndDate
-            : s;
-      }
       if (child.type != gantt.config.types.project) {
+        //if (task.text=="Design"){
+        //  debugger;
+        //}
         totalToDo += child.duration;
         totalDone += (child.progress || 0) * child.duration;
         totalDuration += child.duration || 0;
+        if (child.start_date) {
+          const s = new Date(child.start_date.getTime());
+          const t = new Date(child.end_date.getTime());
+          if (earliestStartDate == null || s.getTime() < earliestStartDate.getTime()) earliestStartDate = s;
+          latestEndDate =
+            latestEndDate.getTime() > t.getTime()
+              ? latestEndDate
+              : t;
+        }
       }
     }, task.id);
-    if (!totalToDo)
-      return { progress: 0, duration: task.duration, end_date: task.end_date };
-    else
+    if (!totalToDo){
+      return { progress: 0, duration: 0, start_date: earliestStartDate, end_date: earliestStartDate};
+    }
+ 
+    else {
       return {
         progress: totalDone / totalToDo,
-        duration: totalDuration,
+        duration: dateDiffInDays(earliestStartDate, latestEndDate),
+        start_date: earliestStartDate,
         end_date: latestEndDate
       };
+    }
+      
   }
 
   function refreshSummaryProgress(id, submit) {
@@ -94,10 +113,11 @@
 
     var task = gantt.getTask(id);
     const summary = calculateSummaryProgress(task);
-
     task.progress = summary.progress;
     task.duration = summary.duration;
     task.end_date = summary.end_date;
+    task.start_date = summary.start_date;
+    
 
     if (!submit) {
       gantt.refreshTask(id);
@@ -112,10 +132,11 @@
 
   gantt.attachEvent("onParse", function() {
     gantt.eachTask(function(task) {
-      const summary = calculateSummaryProgress(task);
+      const summary = calculateSummaryProgress(task, false);
       task.progress = summary.progress;
       task.duration = summary.duration;
       task.end_date = summary.end_date;
+      task.start_date = summary.start_date;
     });
   });
 
