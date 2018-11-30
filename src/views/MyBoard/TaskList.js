@@ -44,6 +44,10 @@ const ScrollContainer = styled("div")`
 const Container = styled("div")``;
 /* stylelint-enable */
 
+const orderByDate = tasks => {
+  return tasks.sort((a, b) => new Date(a.start_date) - new Date(b.start_date));
+};
+
 class InnerTaskList extends React.Component {
   shouldComponentUpdate(nextProps) {
     if (nextProps.tasks !== this.props.tasks) {
@@ -54,13 +58,14 @@ class InnerTaskList extends React.Component {
   }
 
   render() {
-    return this.props.tasks.map((task, index) => (
+    return orderByDate(this.props.tasks).map((task, index) => (
       <Draggable key={task.id} draggableId={task.id} index={index}>
         {(dragProvided, dragSnapshot) => (
           <TaskItem
             key={task.id}
             task={task}
             isDragging={dragSnapshot.isDragging}
+            showOverdue={this.props.showOverdue}
             isGroupedOver={Boolean(dragSnapshot.combineTargetFor)}
             provided={dragProvided}
           />
@@ -74,12 +79,13 @@ class InnerList extends React.Component {
   render() {
     const { tasks, dropProvided } = this.props;
     const title = this.props.title ? <Title>{this.props.title}</Title> : null;
+    const showOverdue = this.props.showOverdue;
 
     return (
       <Container>
         {title}
         <DropZone innerRef={dropProvided.innerRef}>
-          <InnerTaskList tasks={tasks} />
+          <InnerTaskList tasks={tasks} showOverdue={showOverdue} />
           {dropProvided.placeholder}
         </DropZone>
       </Container>
@@ -103,7 +109,8 @@ export default class TaskList extends React.Component {
       style,
       tasks,
       title,
-      color
+      color,
+      showOverdue
     } = this.props;
 
     return (
@@ -134,6 +141,7 @@ export default class TaskList extends React.Component {
               <InnerList
                 tasks={tasks}
                 title={title}
+                showOverdue={showOverdue}
                 dropProvided={dropProvided}
               />
             )}

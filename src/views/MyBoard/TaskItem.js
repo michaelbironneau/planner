@@ -2,6 +2,9 @@
 import React from "react";
 import styled from "react-emotion";
 import { borderRadius, colors, grid } from "./constants";
+import * as moment from "moment";
+import { Progress } from "react-sweet-progress";
+import "react-sweet-progress/lib/style.css";
 
 const getBackgroundColor = (isDragging, isGroupedOver) => {
   if (isDragging) {
@@ -43,16 +46,8 @@ const Container = styled("a")`
 
   /* flexbox */
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-`;
-
-const Avatar = styled("img")`
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  margin-right: ${grid}px;
-  flex-shrink: 0;
-  flex-grow: 0;
 `;
 
 const Content = styled("div")`
@@ -64,22 +59,32 @@ const Content = styled("div")`
     https://stackoverflow.com/questions/35111090/why-ie11-doesnt-wrap-the-text-in-flexbox
   */
   flex-basis: 100%;
+  flex-flow: row wrap;
 
   /* flex parent */
   display: flex;
   flex-direction: column;
 `;
 
+const progressStyle = {
+  margin: "5px"
+};
+
 const BlockTask = styled("div")``;
 
 const Footer = styled("div")`
   display: flex;
+  flex-wrap: wrap;
   margin-top: ${grid}px;
 `;
 
 const TaskSpan = styled("small")`
   flex-grow: 0;
   margin: 0;
+
+  &.overdue {
+    color: red;
+  }
 `;
 
 const Attribution = styled("small")`
@@ -112,8 +117,23 @@ export default class TaskItem extends React.PureComponent {
         <Content>
           <BlockTask>{task.text}</BlockTask>
           <Footer>
-            <TaskSpan>{task.start_date}</TaskSpan>
+            <TaskSpan
+              className={
+                this.props.showOverdue &&
+                moment(task.start_date) < moment().startOf("day")
+                  ? "overdue"
+                  : ""
+              }
+            >
+              {moment(task.start_date).calendar()}
+            </TaskSpan>
+
             <Attribution>{task.project.name}</Attribution>
+            <Progress
+              style={progressStyle}
+              percent={100 * task.progress}
+              status={task.progress === 1 ? "success" : ""}
+            />
           </Footer>
         </Content>
       </Container>

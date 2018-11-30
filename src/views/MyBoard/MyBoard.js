@@ -7,7 +7,6 @@ import addons, { mockChannel } from "@storybook/addons";
 import { DragDropContext } from "react-beautiful-dnd";
 import TaskList from "./TaskList";
 import { colors, grid } from "./constants";
-import { tasks } from "./tasks";
 import { getTasksForUser, getTasksMap } from "../../store/selectors";
 import { setTaskProgress } from "../../store/actions";
 import { connect } from "react-redux";
@@ -98,9 +97,9 @@ const PushDown = styled("div")`
 `;
 
 const initialTasks = {
-  todo: tasks.slice(0, 4),
-  inprog: tasks.slice(4, 6),
-  done: tasks.slice(6, 9)
+  todo: [],
+  inprog: [],
+  done: []
 };
 
 class TaskApp extends Component {
@@ -208,6 +207,7 @@ class TaskApp extends Component {
                 title="Todo"
                 listId="todo"
                 listType="card"
+                showOverdue={true}
                 isDropDisabled={disabledDroppable === "todo"}
                 tasks={taskMap.todo}
               />
@@ -218,6 +218,7 @@ class TaskApp extends Component {
                 title="In Progress"
                 listId="inprog"
                 listType="card"
+                showOverdue={false}
                 isDropDisabled={disabledDroppable === "inprog"}
                 tasks={taskMap.inprog}
               />
@@ -228,6 +229,7 @@ class TaskApp extends Component {
                 title="Done"
                 listId="done"
                 listType="card"
+                showOverdue={false}
                 isDropDisabled={disabledDroppable === "done"}
                 tasks={taskMap.done}
               />
