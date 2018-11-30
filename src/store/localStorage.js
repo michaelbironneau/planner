@@ -28,9 +28,16 @@ export class LocalStore {
   };
 
   updateTask = task => {
-    const index = tasks.findIndex(task => task.id == task.id);
+    const index = tasks.findIndex(taskI => taskI.id == task.id);
     if (index === -1) return false;
     tasks[index] = task;
+    return true;
+  };
+
+  setTaskProgress = (taskId, progress) => {
+    const index = tasks.findIndex(task => task.id == taskId);
+    if (index === -1) return false;
+    tasks[index].progress = progress;
     return true;
   };
 }

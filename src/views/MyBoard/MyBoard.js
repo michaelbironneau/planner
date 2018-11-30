@@ -7,8 +7,49 @@ import addons, { mockChannel } from "@storybook/addons";
 import { DragDropContext } from "react-beautiful-dnd";
 import TaskList from "./TaskList";
 import { colors, grid } from "./constants";
-import { reorderTaskMap } from "./reorder";
 import { tasks } from "./tasks";
+import { getTasksForUser, getTasksMap } from "../../store/selectors";
+import { setTaskProgress } from "../../store/actions";
+import { connect } from "react-redux";
+
+const testUserId = "5";
+
+const getTaskMapByProgress = tasks => {
+  const ret = { todo: [], inprog: [], done: [] };
+  for (var i = 0; i < tasks.length; i++) {
+    if (tasks[i].progress == 0) {
+      ret.todo.push(tasks[i]);
+    } else if (tasks[i].progress > 0 && tasks[i].progress < 1) {
+      ret.inprog.push(tasks[i]);
+    } else {
+      ret.done.push(tasks[i]);
+    }
+  }
+  return ret;
+};
+
+const mapStateToProps = state => {
+  const tasks = getTasksForUser(state, testUserId);
+  const ret = [];
+  const taskMap = getTasksMap(state);
+  for (var i = 0; i < tasks.length; i++) {
+    let hasChildren = false;
+    for (var j = 0; j < tasks.length; j++) {
+      if (tasks[j].parent == tasks[i].id) {
+        hasChildren = true;
+        break;
+      }
+    }
+    if (hasChildren) continue; //don't add tasks with children - just add the children
+    if (tasks[i].parent) {
+      tasks[i].project = { name: taskMap[tasks[i].parent].text };
+    } else {
+      tasks[i].project = { name: "" };
+    }
+    ret.push(tasks[i]);
+  }
+  return { taskMap: getTaskMapByProgress(ret) };
+};
 
 addons.setChannel(mockChannel());
 
@@ -62,12 +103,12 @@ const initialTasks = {
   done: tasks.slice(6, 9)
 };
 
-export default class TaskApp extends Component {
+class TaskApp extends Component {
   /* eslint-disable react/sort-comp */
 
   state = {
-    //taskMap: this.props.initial
-    taskMap: initialTasks
+    //userTasks: this.props.initial
+    userTasks: initialTasks
   };
 
   onDragStart = initial => {
@@ -87,14 +128,55 @@ export default class TaskApp extends Component {
 
     const source = result.source;
     const destination = result.destination;
-
-    this.setState(
+    if (source.droppableId === "todo" && destination.droppableId === "inprog") {
+      this.props.dispatch(
+        setTaskProgress(this.props.taskMap.todo[source.index].id, 0.1)
+      );
+    } else if (
+      source.droppableId === "todo" &&
+      destination.droppableId === "done"
+    ) {
+      this.props.dispatch(
+        setTaskProgress(this.props.taskMap.todo[source.index].id, 1)
+      );
+    } else if (
+      source.droppableId === "inprog" &&
+      destination.droppableId === "done"
+    ) {
+      this.props.dispatch(
+        setTaskProgress(this.props.taskMap.inprog[source.index].id, 1)
+      );
+    } else if (
+      source.droppableId === "inprog" &&
+      destination.droppableId === "todo"
+    ) {
+      this.props.dispatch(
+        setTaskProgress(this.props.taskMap.inprog[source.index].id, 0)
+      );
+    } else if (
+      source.droppableId === "done" &&
+      destination.droppableId === "todo"
+    ) {
+      this.props.dispatch(
+        setTaskProgress(this.props.taskMap.done[source.index].id, 0)
+      );
+    } else if (
+      source.droppableId === "done" &&
+      destination.droppableId === "inprog"
+    ) {
+      this.props.dispatch(
+        setTaskProgress(this.props.taskMap.done[source.index].id, 0.5)
+      );
+    } else {
+      console.warn("Unknown source/destination for drop", source, destination);
+    }
+    /**this.setState(;
       reorderTaskMap({
-        taskMap: this.state.taskMap,
+        taskMap: this.props.taskMap,
         source,
         destination
       })
-    );
+    ); */
   };
 
   // TODO
@@ -111,9 +193,8 @@ export default class TaskApp extends Component {
   };
 
   render() {
-    const { taskMap } = this.state;
     const disabledDroppable = "TODO";
-
+    const taskMap = this.props.taskMap;
     return (
       <DragDropContext
         onDragStart={this.onDragStart}
@@ -157,3 +238,5 @@ export default class TaskApp extends Component {
     );
   }
 }
+
+export default connect(mapStateToProps)(TaskApp);

@@ -110,9 +110,9 @@ export default class TaskItem extends React.PureComponent {
         {...provided.dragHandleProps}
       >
         <Content>
-          <BlockTask>{task.name}</BlockTask>
+          <BlockTask>{task.text}</BlockTask>
           <Footer>
-            <TaskSpan>{task.span}</TaskSpan>
+            <TaskSpan>{task.start_date}</TaskSpan>
             <Attribution>{task.project.name}</Attribution>
           </Footer>
         </Content>

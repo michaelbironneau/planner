@@ -3,7 +3,8 @@ import {
   UPDATE_TASK,
   DELETE_TASK,
   LOAD_ALL_TASKS,
-  CREATE_TASKS
+  CREATE_TASKS,
+  SET_TASK_PROGRESS
 } from "../actionTypes";
 
 import { LocalStore } from "../localStorage";
@@ -19,14 +20,31 @@ export default function(state = initialState, action) {
           links: state.links
         })
       );
+    case SET_TASK_PROGRESS:
+      let index = state.tasks.findIndex(task => task.id === action.payload.id);
+      if (index === -1) {
+        console.warn(
+          "SET_TASK_PROGRESS failed with unknown ID",
+          action.payload.id
+        );
+        return JSON.parse(JSON.stringify(state));
+      }
+      state.tasks[index].progress = action.payload.progress;
+      return {
+        tasks: JSON.parse(JSON.stringify(state.tasks)),
+        links: JSON.parse(JSON.stringify(state.links))
+      };
     case UPDATE_TASK:
-      const index = state.tasks.findIndex(task => task.id == action.payload.id);
+      index = state.tasks.findIndex(task => task.id == action.payload.id);
       if (index === -1) {
         console.warn("UPDATE_TASK failed with unknown ID", action.payload.id);
         return JSON.parse(JSON.stringify(state));
       }
       state.tasks[index] = action.payload;
-      return { tasks: JSON.parse(JSON.stringify(state.tasks)), links: JSON.parse(JSON.stringify(state.links)) };
+      return {
+        tasks: JSON.parse(JSON.stringify(state.tasks)),
+        links: JSON.parse(JSON.stringify(state.links))
+      };
     case DELETE_TASK:
       index = state.tasks.findIndex(task => task.id == action.payload.id);
       if (index === -1) {

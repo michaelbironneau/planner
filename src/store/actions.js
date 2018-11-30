@@ -3,7 +3,8 @@ import {
   UPDATE_TASK,
   DELETE_TASK,
   CREATE_TASKS,
-  LOAD_ALL_TASKS
+  LOAD_ALL_TASKS,
+  SET_TASK_PROGRESS
 } from "./actionTypes";
 import { LocalStore } from "./localStorage";
 
@@ -17,6 +18,17 @@ export const createTask = task => {
     payload: {
       id: id,
       ...task
+    }
+  };
+};
+
+export const setTaskProgress = (taskId, progress) => {
+  Store.setTaskProgress(taskId, progress);
+  return {
+    type: SET_TASK_PROGRESS,
+    payload: {
+      id: taskId,
+      progress: progress
     }
   };
 };
