@@ -7,7 +7,7 @@ import addons, { mockChannel } from "@storybook/addons";
 import { DragDropContext } from "react-beautiful-dnd";
 import TaskList from "./TaskList";
 import { colors, grid } from "./constants";
-import { getTasksForUser, getTasksMap } from "../../store/selectors";
+import { getTasksForUser, getTasksMap, getTasks } from "../../store/selectors";
 import { setTaskProgress } from "../../store/actions";
 import { connect } from "react-redux";
 
@@ -28,24 +28,25 @@ const getTaskMapByProgress = tasks => {
 };
 
 const mapStateToProps = state => {
-  const tasks = getTasksForUser(state, testUserId);
+  const userTasks = getTasksForUser(state, testUserId);
+  const allTasks = getTasks(state).tasks;
   const ret = [];
   const taskMap = getTasksMap(state);
-  for (var i = 0; i < tasks.length; i++) {
+  for (var i = 0; i < userTasks.length; i++) {
     let hasChildren = false;
-    for (var j = 0; j < tasks.length; j++) {
-      if (tasks[j].parent == tasks[i].id) {
+    for (var j = 0; j < allTasks.length; j++) {
+      if (allTasks[j].parent === userTasks[i].id) {
         hasChildren = true;
         break;
       }
     }
     if (hasChildren) continue; //don't add tasks with children - just add the children
-    if (tasks[i].parent) {
-      tasks[i].project = { name: taskMap[tasks[i].parent].text };
+    if (userTasks[i].parent) {
+      userTasks[i].project = { name: taskMap[userTasks[i].parent].text };
     } else {
-      tasks[i].project = { name: "" };
+      userTasks[i].project = { name: "" };
     }
-    ret.push(tasks[i]);
+    ret.push(userTasks[i]);
   }
   return { taskMap: getTaskMapByProgress(ret) };
 };
