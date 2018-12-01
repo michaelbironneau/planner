@@ -8,7 +8,7 @@ import "./critical_path.js";
 import "./Gantt.scss";
 import "./progress_calculation.js";
 import { connect } from "react-redux";
-import { createTask, updateTask, deleteTask} from '../../store/actions'
+import { createTask, updateTask, deleteTask } from "../../store/actions";
 
 let resources = [
   { id: "0", text: "Alexandra" },
@@ -117,10 +117,10 @@ class Gantt extends Component {
     gantt.render();
   }
 
-  stripHiddenProps(task){
+  stripHiddenProps(task) {
     const ret = {};
-    for (var prop in task){
-      if (prop.startsWith('$')) continue;
+    for (var prop in task) {
+      if (prop.startsWith("$")) continue;
       ret[prop] = task[prop];
     }
     return ret;
@@ -143,8 +143,8 @@ class Gantt extends Component {
     });
 
     gantt.attachEvent("onAfterTaskUpdate", (id, task) => {
-       //this.props.updateTask(this.stripHiddenProps(task));
-      //console.log('Update', task, JSON.parse(JSON.stringify(task)));
+      this.props.updateTask(this.stripHiddenProps(task));
+      //console.log("Update", task, JSON.parse(JSON.stringify(task)));
     });
 
     gantt.attachEvent("onAfterTaskDelete", id => {
@@ -171,25 +171,25 @@ class Gantt extends Component {
     });
 
     gantt.attachEvent("onError", errorMessage => {
-      console.warn('Gantt error', errorMessage);
+      console.warn("Gantt error", errorMessage);
       return true;
     });
   }
 
-  parseDatesInTasks(){
+  parseDatesInTasks() {
     return {
       links: this.props.tasks.links,
       data: this.props.tasks.data.map(task => {
         const c = task;
-        if (task.start_date){
+        if (task.start_date) {
           c.start_date = new Date(task.start_date);
         }
-        if (task.end_date){
+        if (task.end_date) {
           c.end_date = new Date(task.end_date);
         }
         return c;
       })
-    }
+    };
   }
 
   componentDidMount() {
@@ -234,5 +234,7 @@ class Gantt extends Component {
   }
 }
 
-export default connect (
-  null, {createTask, updateTask, deleteTask})(Gantt);
+export default connect(
+  null,
+  { createTask, updateTask, deleteTask }
+)(Gantt);
