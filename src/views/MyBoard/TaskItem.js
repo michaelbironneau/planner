@@ -5,6 +5,7 @@ import { borderRadius, colors, grid } from "./constants";
 import * as moment from "moment";
 import { Progress } from "react-sweet-progress";
 import "react-sweet-progress/lib/style.css";
+import { Link } from "react-router-dom";
 
 const getBackgroundColor = (isDragging, isGroupedOver) => {
   if (isDragging) {
@@ -115,7 +116,9 @@ export default class TaskItem extends React.PureComponent {
         {...provided.dragHandleProps}
       >
         <Content>
-          <BlockTask>{task.text}</BlockTask>
+          <Link to={"/tasks/" + task.id}>
+            <BlockTask>{task.text}</BlockTask>
+          </Link>
           <Footer>
             <TaskSpan
               className={
