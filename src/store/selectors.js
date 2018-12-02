@@ -2,6 +2,10 @@ export const getTasks = store => store.tasks;
 
 export const getLinks = store => store.links;
 
+export const getTaskById = (store, id) => {
+  return store.tasks.tasks.find(task => task.id === id);
+};
+
 export const getTasksMap = store => {
   const ret = {};
   store.tasks.tasks.forEach(task => {
