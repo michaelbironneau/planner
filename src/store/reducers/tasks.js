@@ -17,7 +17,8 @@ export default function(state = initialState, action) {
       return JSON.parse(
         JSON.stringify({
           tasks: [...state.tasks, action.payload],
-          links: state.links
+          links: state.links,
+          users: JSON.parse(JSON.stringify(state.users))
         })
       );
     case SET_TASK_PROGRESS:
@@ -32,7 +33,8 @@ export default function(state = initialState, action) {
       state.tasks[index].progress = action.payload.progress;
       return {
         tasks: JSON.parse(JSON.stringify(state.tasks)),
-        links: JSON.parse(JSON.stringify(state.links))
+        links: JSON.parse(JSON.stringify(state.links)),
+        users: JSON.parse(JSON.stringify(state.users))
       };
     case UPDATE_TASK:
       index = state.tasks.findIndex(task => task.id == action.payload.id);
@@ -43,7 +45,8 @@ export default function(state = initialState, action) {
       state.tasks[index] = action.payload;
       return {
         tasks: JSON.parse(JSON.stringify(state.tasks)),
-        links: JSON.parse(JSON.stringify(state.links))
+        links: JSON.parse(JSON.stringify(state.links)),
+        users: JSON.parse(JSON.stringify(state.users))
       };
     case DELETE_TASK:
       index = state.tasks.findIndex(task => task.id == action.payload.id);
@@ -59,7 +62,8 @@ export default function(state = initialState, action) {
       return JSON.parse(
         JSON.stringify({
           links: state.links,
-          tasks: [...state.tasks, ...action.payload]
+          tasks: [...state.tasks, ...action.payload],
+          users: JSON.parse(JSON.stringify(state.users))
         })
       );
     default:

@@ -3,12 +3,14 @@ import data from "./testdata.json";
 let nextTaskId = 1234;
 let tasks = data.data;
 let links = data.links;
+let users = data.users;
 
 export class LocalStore {
   loadStore = () => {
     return {
       tasks: tasks,
-      links: links
+      links: links,
+      users: users
     };
   };
 

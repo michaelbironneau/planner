@@ -28,3 +28,16 @@ export const getTasksForUser = (store, userId, start, finish) => {
     return store.tasks.tasks.filter(task => task.owner_id === userId);
   }
 };
+
+export const getUsers = store => {
+  return store.tasks.users;
+};
+export const getOwnerOfTask = (store, taskId) => {
+  const task = store.tasks.tasks.find(task => task.id === taskId);
+  if (task === undefined) return { text: "None" };
+  return (
+    store.tasks.users.find(user => user.id === task.owner_id) || {
+      text: "None"
+    }
+  );
+};
