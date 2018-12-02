@@ -12,10 +12,10 @@ const blankUnscheduledTask = {
 };
 
 export const newTask = props => {
-  if ((props.type ? props.type : "task") == "task" && !props.start_date) {
+  if ((props.type ? props.type : "task") === "task" && !props.start_date) {
     return Object.assign({}, blankUnscheduledTask, props);
   }
-  if (props.type == "project" && !props.start_date) {
+  if (props.type === "project" && !props.start_date) {
     return Object.assign({}, blankUnscheduledTask, props);
   }
   console.log(props);

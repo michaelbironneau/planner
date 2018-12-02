@@ -37,7 +37,7 @@ export default function(state = initialState, action) {
         users: JSON.parse(JSON.stringify(state.users))
       };
     case UPDATE_TASK:
-      index = state.tasks.findIndex(task => task.id == action.payload.id);
+      index = state.tasks.findIndex(task => task.id === action.payload.id);
       if (index === -1) {
         console.warn("UPDATE_TASK failed with unknown ID", action.payload.id);
         return JSON.parse(JSON.stringify(state));
@@ -49,13 +49,13 @@ export default function(state = initialState, action) {
         users: JSON.parse(JSON.stringify(state.users))
       };
     case DELETE_TASK:
-      index = state.tasks.findIndex(task => task.id == action.payload.id);
+      index = state.tasks.findIndex(task => task.id === action.payload);
       if (index === -1) {
         console.warn("DELETE_TASK failed with unknown ID", action.payload.id);
         return JSON.parse(JSON.stringify(state));
       }
       state.tasks.splice(index, 1);
-      return { tasks: state.tasks, links: state.links };
+      return { tasks: state.tasks, links: state.links, users: state.users };
     case LOAD_ALL_TASKS:
       return action.payload;
     case CREATE_TASKS:

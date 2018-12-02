@@ -4,33 +4,21 @@ import {
   Form,
   ButtonGroup,
   FormGroup,
-  Container,
   Label,
   Card,
   CardHeader,
   CardBody,
   Col,
   Input,
-  Button,
-  Jumbotron
+  Button
 } from "reactstrap";
 import { Progress } from "react-sweet-progress";
 import "react-sweet-progress/lib/style.css";
 import * as moment from "moment";
 import { connect } from "react-redux";
 import { getTaskById, getUsers, getOwnerOfTask } from "../../store/selectors";
-import { updateTask } from "../../store/actions";
-
-const testTask = {
-  id: 14,
-  text: "Database design",
-  progress: 0.5,
-  start_date: "2018-11-23T00:00:00Z",
-  duration: 7,
-  description:
-    "Create the database design.\n This should involve both creating all the tables and producing a design specification including how the data flows in and out.",
-  owner_id: "5"
-};
+import { updateTask, deleteTask } from "../../store/actions";
+import PropTypes from "prop-types";
 
 const mapStateToProps = store => {
   return {
@@ -42,7 +30,7 @@ const mapStateToProps = store => {
 
 class Task extends Component {
   static contextTypes = {
-    router: () => true // replace with PropTypes.object if you use them
+    router: PropTypes.object.isRequired
   };
   constructor(props) {
     super(props);
@@ -52,6 +40,7 @@ class Task extends Component {
     this.renderUsers = this.renderUsers.bind(this);
     this.changeAssignee = this.changeAssignee.bind(this);
     this.save = this.save.bind(this);
+    this.delete = this.delete.bind(this);
   }
 
   componentWillMount() {
@@ -76,6 +65,11 @@ class Task extends Component {
 
   save() {
     this.props.updateTask(this.state.task);
+    this.context.router.history.goBack();
+  }
+
+  delete() {
+    this.props.deleteTask(this.state.task.id);
     this.context.router.history.goBack();
   }
 
@@ -104,7 +98,6 @@ class Task extends Component {
 
   render() {
     const modelTask = this.state.task;
-    console.log(this.props);
     const owner = this.props.users.find(
       user => user.id === this.state.task.owner_id
     ) || { text: "None" };
@@ -115,7 +108,7 @@ class Task extends Component {
           {modelTask.start_date
             ? "Scheduled to start " + moment(modelTask.start_date).calendar()
             : "Unscheduled"}
-          <Button color="danger" className="pull-right">
+          <Button onClick={this.delete} color="danger" className="pull-right">
             <i className="icon-minus icons mr-1" />
             Delete
           </Button>
@@ -194,5 +187,5 @@ class Task extends Component {
 
 export default connect(
   mapStateToProps,
-  { updateTask }
+  { updateTask, deleteTask }
 )(Task);

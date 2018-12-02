@@ -12,7 +12,7 @@ const Store = new LocalStore();
 
 export const createTask = task => {
   const id = Store.addTaskReturningId(task);
-  if (!id) throw "Error creating task!";
+  if (!id) throw new Error("Error creating task!");
   return {
     type: CREATE_TASK,
     payload: {
@@ -39,12 +39,12 @@ export const createProject = projectAndTasks => {
   const projectID = Store.addTaskReturningId(project);
   project.id = projectID;
 
-  if (!projectID) throw "Error creating Project!";
+  if (!projectID) throw new Error("Error creating Project!");
 
   tasks.forEach((task, index) => {
     tasks[index].parent = projectID;
     const taskID = Store.addTaskReturningId(task);
-    if (!taskID) throw "Error creating task!";
+    if (!taskID) throw new Error("Error creating task!");
     tasks[index].id = taskID;
   });
   return {
@@ -54,7 +54,7 @@ export const createProject = projectAndTasks => {
 };
 
 export const updateTask = task => {
-  if (!Store.updateTask(task)) throw "Error updating task!";
+  if (!Store.updateTask(task)) throw new Error("Error updating task!");
   return {
     type: UPDATE_TASK,
     payload: task
@@ -62,7 +62,7 @@ export const updateTask = task => {
 };
 
 export const deleteTask = taskId => {
-  if (!Store.removeTaskById(taskId)) throw "Error deleting task!";
+  if (!Store.removeTaskById(taskId)) throw new Error("Error deleting task!");
   return {
     type: DELETE_TASK,
     payload: taskId

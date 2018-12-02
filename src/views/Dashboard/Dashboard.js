@@ -1,11 +1,10 @@
 import React, { Component } from "react";
 import Gantt from "../Gantt/Gantt";
 import "./Dashboard.scss";
-import { Button, Card, CardBody, CardHeader, Col, Row } from "reactstrap";
+import { Button, Col, Row } from "reactstrap";
 import { Link } from "react-router-dom";
 import { getTasks } from "../../store/selectors";
 import { connect } from "react-redux";
-
 
 const mapStateToProps = state => {
   const tasks = getTasks(state);
