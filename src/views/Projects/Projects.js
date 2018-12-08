@@ -104,6 +104,10 @@ class Projects extends Component {
       <Container>
         <Card>
           <CardHeader>
+            <Button outline color="primary" className="pull-right">
+              <i className="fa fa-print" />
+              &nbsp;To Excel
+            </Button>
             <Form inline>
               <Label>
                 <i className="fa fa-bars" />
@@ -116,9 +120,10 @@ class Projects extends Component {
           </CardHeader>
 
           <CardBody>
+            <h1>Project Name</h1>
             <h4 className="text-center">Scheduling</h4>
             <p>Start:</p>
-            <p>Finish:</p>
+            <p>Finish (estimate):</p>
             <h4 className="text-center">Costs</h4>
             {this.renderCostsTable()}
             <h4 className="text-center">Resources</h4>
