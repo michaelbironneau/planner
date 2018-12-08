@@ -95,9 +95,6 @@ class Task extends Component {
   }
 
   cancel() {
-    const taskID = this.props.match.params.id;
-    const task = JSON.parse(JSON.stringify(this.props.getTaskById(taskID)));
-    this.setState({ task });
     this.context.router.history.goBack();
   }
 
