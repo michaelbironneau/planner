@@ -97,8 +97,7 @@ class Users extends Component {
           <Col xl={6}>
             <Card>
               <CardHeader>
-                <i className="fa fa-align-justify" /> Users{" "}
-                <small className="text-muted">example</small>
+                <i className="fa fa-users" /> Team
               </CardHeader>
               <CardBody>
                 <Table responsive hover>

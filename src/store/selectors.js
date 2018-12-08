@@ -73,11 +73,15 @@ export const getUserWorkload = (store, start, finish) => {
     if (!taskStart || !taskDuration || !periodStart || !periodFinish) return 0;
     let taskStartInPeriod = moment.max(taskStart, periodStart);
     let taskFinishInPeriod = moment.min(
-      moment(taskStart).add(taskDuration, "days"),
+      moment(taskStart).add(taskDuration * 24, "hours"),
       periodFinish
     );
     if (moment(taskFinishInPeriod).isBefore(taskStartInPeriod)) return 0; //this would arise if the task is not, in fact in period
-    return taskFinishInPeriod.diff(taskStartInPeriod, "days");
+    return (
+      Math.round(
+        10 * taskFinishInPeriod.diff(taskStartInPeriod, "days", true)
+      ) / 10
+    );
   };
 
   const tasks = getAllChildTasks(store, start, finish);

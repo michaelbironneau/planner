@@ -65,16 +65,7 @@ class Task extends Component {
 
   changeDuration(e) {
     const task = Object.assign({}, this.state.task);
-    if (e.target.value.length === 0) {
-      task.duration = 0;
-    } else {
-      task.duration = parseInt(e.target.value);
-    }
-
-    if (isNaN(task.duration)) {
-      console.warn("Not a number", e.target.value);
-      return false;
-    }
+    task.duration = e.target.value;
     this.setState({ task });
   }
 
@@ -85,6 +76,12 @@ class Task extends Component {
   }
 
   save() {
+    const task = Object.assign({}, this.state.task);
+    task.duration = parseFloat(task.duration);
+    if (isNaN(task.duration)) {
+      console.warn("Invalid duration", task); //TODO: Error message
+      return;
+    }
     this.props.updateTask(this.state.task);
     this.context.router.history.goBack();
   }
