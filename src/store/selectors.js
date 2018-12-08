@@ -1,5 +1,7 @@
 import * as moment from "moment";
 
+import { getWorkloadInPeriod, getTaskCostsPerWeek } from "./kpis";
+
 export const getTasks = store => JSON.parse(JSON.stringify(store.tasks));
 
 export const getLinks = store => JSON.parse(JSON.stringify(store.links));
@@ -63,39 +65,18 @@ export const getAllChildTasks = (store, start, finish) => {
 export const getUserWorkload = (store, start, finish) => {
   const ret = {};
 
-  //calculate workload in period - assumes the task is at least partially in period
-  const workloadInPeriod = (
-    taskStart,
-    taskDuration,
-    periodStart,
-    periodFinish
-  ) => {
-    if (!taskStart || !taskDuration || !periodStart || !periodFinish) return 0;
-    let taskStartInPeriod = moment.max(taskStart, periodStart);
-    let taskFinishInPeriod = moment.min(
-      moment(taskStart).add(taskDuration * 24, "hours"),
-      periodFinish
-    );
-    if (moment(taskFinishInPeriod).isBefore(taskStartInPeriod)) return 0; //this would arise if the task is not, in fact in period
-    return (
-      Math.round(
-        10 * taskFinishInPeriod.diff(taskStartInPeriod, "days", true)
-      ) / 10
-    );
-  };
-
   const tasks = getAllChildTasks(store, start, finish);
 
   tasks.forEach(task => {
     if (ret[task.owner_id] === undefined) {
-      ret[task.owner_id] = workloadInPeriod(
+      ret[task.owner_id] = getWorkloadInPeriod(
         task.start_date,
         task.duration,
         start,
         finish
       );
     } else {
-      ret[task.owner_id] += workloadInPeriod(
+      ret[task.owner_id] += getWorkloadInPeriod(
         task.start_date,
         task.duration,
         start,
@@ -130,4 +111,12 @@ export const getOwnerOfTask = (store, taskId) => {
       text: "None"
     }
   );
+};
+
+export const getTaskDisplayName = (store, taskId) => {
+  const task = store.tasks.tasks.find(task => task.id === taskId);
+  if (task === undefined) return "Unknown";
+  if (!task.parent) return task.text;
+  const parent = store.tasks.tasks.find((parent = parent.id === task.parent));
+  return parent.text + " > " + task.text;
 };

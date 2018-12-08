@@ -1,5 +1,5 @@
 import data from "./testdata.json";
-
+import { workloadInPeriod } from "./kpis";
 let nextTaskId = 1234;
 let tasks = data.data;
 let links = data.links;
