@@ -36,13 +36,13 @@ class DefaultHeader extends Component {
             <NavLink href="#/projects/my-board">My Board</NavLink>
           </NavItem>
           <NavItem className="px-3">
-            <NavLink href="#/users">Team</NavLink>
+            <NavLink href="#/team">Team</NavLink>
           </NavItem>
           <NavItem className="px-3">
-            <NavLink href="#">Projects</NavLink>
+            <NavLink href="#/projects">Projects</NavLink>
           </NavItem>
           <NavItem className="px-3">
-            <NavLink href="#">Settings</NavLink>
+            <NavLink href="#/settings">Settings</NavLink>
           </NavItem>
         </Nav>
         <Nav className="ml-auto" navbar />

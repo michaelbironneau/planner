@@ -267,7 +267,8 @@ class TaskApp extends Component {
       duration: 1,
       text: text,
       owner_id: testUserId,
-      progress: 0
+      progress: 0,
+      type: "task"
     };
     this.props.dispatch(createTask(task));
   }

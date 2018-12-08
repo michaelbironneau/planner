@@ -5,6 +5,7 @@ import DefaultLayout from "./containers/DefaultLayout";
 import NewProject from "./views/NewProject/NewProject";
 import MyBoard from "./views/MyBoard/MyBoard";
 import Task from "./views/Task/Task";
+import Projects from "./views/Projects/Projects";
 
 function Loading() {
   return <div>Loading...</div>;
@@ -29,7 +30,8 @@ const User = Loadable({
 const routes = [
   { path: "/", exact: true, name: "Home", component: DefaultLayout },
   { path: "/dashboard", name: "Programme View", component: Dashboard },
-  { path: "/users", exact: true, name: "Users", component: Users },
+  { path: "/team", exact: true, name: "Team", component: Users },
+  { path: "/projects", exact: true, name: "Projects", component: Projects },
   {
     path: "/projects/new",
     exact: true,
