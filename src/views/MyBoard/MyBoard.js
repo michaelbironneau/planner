@@ -181,42 +181,60 @@ class TaskApp extends Component {
     const destination = result.destination;
     if (source.droppableId === "todo" && destination.droppableId === "inprog") {
       this.props.dispatch(
-        setTaskProgress(this.props.taskMap.todo[source.index].id, 0.1)
+        setTaskProgress(
+          this.props.taskMap(this.state.weekStart).todo[source.index].id,
+          0.1
+        )
       );
     } else if (
       source.droppableId === "todo" &&
       destination.droppableId === "done"
     ) {
       this.props.dispatch(
-        setTaskProgress(this.props.taskMap.todo[source.index].id, 1)
+        setTaskProgress(
+          this.props.taskMap(this.state.weekStart).todo[source.index].id,
+          1
+        )
       );
     } else if (
       source.droppableId === "inprog" &&
       destination.droppableId === "done"
     ) {
       this.props.dispatch(
-        setTaskProgress(this.props.taskMap.inprog[source.index].id, 1)
+        setTaskProgress(
+          this.props.taskMap(this.state.weekStart).inprog[source.index].id,
+          1
+        )
       );
     } else if (
       source.droppableId === "inprog" &&
       destination.droppableId === "todo"
     ) {
       this.props.dispatch(
-        setTaskProgress(this.props.taskMap.inprog[source.index].id, 0)
+        setTaskProgress(
+          this.props.taskMap(this.state.weekStart).inprog[source.index].id,
+          0
+        )
       );
     } else if (
       source.droppableId === "done" &&
       destination.droppableId === "todo"
     ) {
       this.props.dispatch(
-        setTaskProgress(this.props.taskMap.done[source.index].id, 0)
+        setTaskProgress(
+          this.props.taskMap(this.state.weekStart).done[source.index].id,
+          0
+        )
       );
     } else if (
       source.droppableId === "done" &&
       destination.droppableId === "inprog"
     ) {
       this.props.dispatch(
-        setTaskProgress(this.props.taskMap.done[source.index].id, 0.5)
+        setTaskProgress(
+          this.props.taskMap(this.state.weekStart).done[source.index].id,
+          0.5
+        )
       );
     } else {
       console.warn("Unknown source/destination for drop", source, destination);
