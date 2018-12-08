@@ -1,64 +1,95 @@
 import React, { Component } from "react";
-import { Badge, Card, CardBody, CardHeader, Col, Row, Table } from "reactstrap";
+import {
+  Badge,
+  Card,
+  CardBody,
+  CardHeader,
+  Col,
+  Row,
+  Table,
+  Button
+} from "reactstrap";
 import { getUsers, getUserWorkload } from "../../store/selectors";
 import { connect } from "react-redux";
-import usersData from "./UsersData";
 import * as moment from "moment";
 
+const today = moment("2017-04-03");
+
 const mapStateToProps = state => {
-  const users = getUsers(state);
-  const workload = getUserWorkload(
-    state,
-    moment("2017-03-01T00:00:00Z"),
-    moment("2018-04-10T00:00:00Z")
-  );
-  for (let i = 0; i < users.length; i++) {
-    users[i].workload = workload[users[i].id];
-  }
-  console.log(users);
+  const getUserWorkloadForDates = (start, finish) => {
+    const users = getUsers(state);
+    const workload = getUserWorkload(state, moment(start), moment(finish));
+    for (let i = 0; i < users.length; i++) {
+      users[i].workload = workload[users[i].id];
+    }
+    return users;
+  };
+
   return {
-    users: users
+    getUsers: getUserWorkloadForDates
   };
 };
+
+function getColorForWorkload(workload) {
+  if (!workload) return "text-success";
+  if (workload <= 3) {
+    return "text-success";
+  } else if (workload > 3 && workload <= 5) {
+    return "text-warning";
+  } else {
+    return "text-danger";
+  }
+}
 
 function UserRow(props) {
   const user = props.user;
   const userLink = `#/users/${user.id}`;
 
-  const getBadge = status => {
-    return status === "Active"
-      ? "success"
-      : status === "Inactive"
-      ? "secondary"
-      : status === "Pending"
-      ? "warning"
-      : status === "Banned"
-      ? "danger"
-      : "primary";
-  };
-
   return (
     <tr key={user.id.toString()}>
-      <th scope="row">
-        <a href={userLink}>{user.id}</a>
-      </th>
-      <td>
-        <a href={userLink}>{user.name}</a>
+      <th scope="row">{user.id}</th>
+      <td>{user.text}</td>
+      <td className={"text-center " + getColorForWorkload(user.workload)}>
+        {user.workload || 0}&nbsp;days
       </td>
-      <td>{user.registered}</td>
-      <td>{user.role}</td>
-      <td>
-        <Badge href={userLink} color={getBadge(user.status)}>
-          {user.status}
-        </Badge>
-      </td>
+      <td>£{user.rate}/day</td>
     </tr>
   );
 }
 
 class Users extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      weekStart: moment(today).startOf("week")
+    };
+    this.renderWeekNumber = this.renderWeekNumber.bind(this);
+    this.incrementWeekstart = this.incrementWeekstart.bind(this);
+  }
+
+  incrementWeekstart(delta) {
+    this.setState({
+      ...this.state,
+      weekStart: moment(this.state.weekStart)
+        .clone()
+        .add(delta, "week")
+    });
+  }
+
+  renderWeekNumber() {
+    const weekNumber = moment(this.state.weekStart).week();
+    if (weekNumber === moment(today).week()) {
+      return `This week`;
+    } else {
+      return `Week #${weekNumber}`;
+    }
+  }
+
   render() {
-    const userList = usersData.filter(user => user.id < 10);
+    const userList = this.props.getUsers(
+      moment(this.state.weekStart),
+      moment(this.state.weekStart).add(1, "week")
+    );
 
     return (
       <div className="animated fadeIn">
@@ -73,11 +104,37 @@ class Users extends Component {
                 <Table responsive hover>
                   <thead>
                     <tr>
-                      <th scope="col">id</th>
-                      <th scope="col">name</th>
-                      <th scope="col">registered</th>
-                      <th scope="col">role</th>
-                      <th scope="col">status</th>
+                      <th scope="col">ID</th>
+                      <th scope="col">Name</th>
+                      <th scope="col" className="text-center">
+                        <p>Workload</p>
+                        <p>
+                          <Button
+                            outline
+                            size="sm"
+                            onClick={() => this.incrementWeekstart(-1)}
+                          >
+                            &lt;
+                          </Button>
+                          <span
+                            style={{
+                              fontSize: "0.8em",
+                              paddingLeft: "5px",
+                              paddingRight: "5px"
+                            }}
+                          >
+                            {this.renderWeekNumber()}
+                          </span>
+                          <Button
+                            outline
+                            size="sm"
+                            onClick={() => this.incrementWeekstart(1)}
+                          >
+                            &gt;
+                          </Button>
+                        </p>
+                      </th>
+                      <th scope="col">Rate</th>
                     </tr>
                   </thead>
                   <tbody>
