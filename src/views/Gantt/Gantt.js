@@ -29,7 +29,6 @@ class Gantt extends Component {
       case "Hours":
         gantt.config.scale_unit = "day";
         gantt.config.date_scale = "%d %M";
-        gantt.config.work_time = true;
         gantt.config.scale_height = 60;
         gantt.config.min_column_width = 30;
         gantt.config.subscales = [{ unit: "hour", step: 1, date: "%H" }];
@@ -37,7 +36,6 @@ class Gantt extends Component {
       case "Days":
         gantt.config.min_column_width = 70;
         gantt.config.scale_unit = "week";
-        gantt.config.work_time = true;
         gantt.config.date_scale = "#%W";
         gantt.config.subscales = [{ unit: "day", step: 1, date: "%d %M" }];
         gantt.config.scale_height = 60;
@@ -45,7 +43,6 @@ class Gantt extends Component {
       case "Months":
         gantt.config.min_column_width = 70;
         gantt.config.scale_unit = "week";
-        gantt.config.work_time = true;
         gantt.config.date_scale = "%F";
         gantt.config.scale_height = 60;
         gantt.config.subscales = [{ unit: "week", step: 1, date: "#%W" }];
@@ -214,6 +211,8 @@ class Gantt extends Component {
     this.setColumns(["text", "start_date", "owner", "duration", "add"]);
     gantt.config.highlight_critical_path = true;
     //gantt.config.show_slack = true;
+    //gantt.config.autosize = "xy";
+    gantt.config.work_time = true;
     gantt.config.show_unscheduled = true;
     gantt.locale.labels.time_enable_button = "Schedule";
     gantt.locale.labels.time_disable_button = "Unschedule";
