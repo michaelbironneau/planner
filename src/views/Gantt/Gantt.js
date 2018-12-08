@@ -11,6 +11,7 @@ import { connect } from "react-redux";
 import { createTask, updateTask, deleteTask } from "../../store/actions";
 
 let resources = [
+  { id: undefined, text: "Unassigned" },
   { id: "0", text: "Alexandra" },
   { id: "1", text: "Bob" },
   { id: "2", text: "Charlie" },
@@ -229,7 +230,9 @@ class Gantt extends Component {
         height: 22,
         map_to: "owner_id",
         type: "select",
-        options: [{ key: "5", label: "Fred" }, { key: "6", label: "Bob" }]
+        options: resources.map(resource => {
+          return { key: resource.id, label: resource.text };
+        })
       }
     ];
     gantt.templates.task_class = function(start, end, task) {
