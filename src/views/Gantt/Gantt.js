@@ -138,12 +138,20 @@ class Gantt extends Component {
     });
 
     gantt.attachEvent("onAfterTaskAdd", (id, task) => {
-      this.props.createTask(this.stripHiddenProps(task));
-      //console.log('Add');
+      const newID = this.props.createTask(this.stripHiddenProps(task)).payload
+        .id;
+      const oldID = task.id;
+      gantt.changeTaskId(oldID, newID);
     });
 
     gantt.attachEvent("onAfterTaskUpdate", (id, task) => {
-      this.props.updateTask(this.stripHiddenProps(task));
+      try {
+        this.props.updateTask(this.stripHiddenProps(task));
+      } catch (ex) {
+        console.warn(ex);
+        console.log(id, task);
+      }
+
       //console.log("Update", task, JSON.parse(JSON.stringify(task)));
     });
 
@@ -206,6 +214,7 @@ class Gantt extends Component {
     gantt.config.show_unscheduled = true;
     gantt.locale.labels.time_enable_button = "Schedule";
     gantt.locale.labels.time_disable_button = "Unschedule";
+    gantt.locale.labels.section_owner = "Assigned to";
     gantt.config.lightbox.sections = [
       {
         name: "description",
@@ -214,7 +223,14 @@ class Gantt extends Component {
         type: "textarea",
         focus: true
       },
-      { name: "time", map_to: "auto", button: true, type: "duration_optional" }
+      { name: "time", map_to: "auto", button: true, type: "duration_optional" },
+      {
+        name: "owner",
+        height: 22,
+        map_to: "owner_id",
+        type: "select",
+        options: [{ key: "5", label: "Fred" }, { key: "6", label: "Bob" }]
+      }
     ];
     gantt.templates.task_class = function(start, end, task) {
       if (task.type === gantt.config.types.project) {

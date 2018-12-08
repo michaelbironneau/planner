@@ -116,6 +116,7 @@ class Task extends Component {
 
   render() {
     const modelTask = this.state.task;
+    if (isNaN(modelTask.progress)) modelTask.progress = 0;
     const owner = this.props.users.find(
       user => user.id === this.state.task.owner_id
     ) || { text: "None" };

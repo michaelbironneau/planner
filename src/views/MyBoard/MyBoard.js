@@ -19,10 +19,11 @@ const today = moment("2017-04-03");
 const getTaskMapByProgress = (tasks, weekStart) => {
   const ret = { todo: [], inprog: [], done: [] };
   for (var i = 0; i < tasks.length; i++) {
+    const progress = isNaN(tasks[i].progress) ? 0 : tasks[i].progress;
     if (!isTaskInCurrentWeek(tasks[i], weekStart)) continue; //only include tasks in current week
-    if (tasks[i].progress == 0) {
+    if (progress == 0) {
       ret.todo.push(tasks[i]);
-    } else if (tasks[i].progress > 0 && tasks[i].progress < 1) {
+    } else if (progress > 0 && progress < 1) {
       ret.inprog.push(tasks[i]);
     } else {
       ret.done.push(tasks[i]);

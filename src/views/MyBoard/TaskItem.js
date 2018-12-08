@@ -134,7 +134,9 @@ export default class TaskItem extends React.PureComponent {
             <Attribution>{task.project.name}</Attribution>
             <Progress
               style={progressStyle}
-              percent={Math.round(100 * task.progress)}
+              percent={Math.round(
+                100 * (isNaN(task.progress) ? 0 : task.progress)
+              )}
               status={task.progress === 1 ? "success" : ""}
             />
           </Footer>

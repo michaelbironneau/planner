@@ -1,9 +1,17 @@
-export const getTasks = store => store.tasks;
+import * as moment from "moment";
 
-export const getLinks = store => store.links;
+export const getTasks = store => JSON.parse(JSON.stringify(store.tasks));
+
+export const getLinks = store => JSON.parse(JSON.stringify(store.links));
+
+export const getUsers = store => JSON.parse(JSON.stringify(store.tasks.users));
 
 export const getTaskById = (store, id) => {
   return store.tasks.tasks.find(task => task.id === id);
+};
+
+export const getUserById = (store, id) => {
+  return store.tasks.users.find(user => user.id === id);
 };
 
 export const getTasksMap = store => {
@@ -11,6 +19,87 @@ export const getTasksMap = store => {
   store.tasks.tasks.forEach(task => {
     ret[task.id] = JSON.parse(JSON.stringify(task));
   });
+  return ret;
+};
+
+const isTaskBetween = (task, start, finish) => {
+  if (moment(task.start_date).isAfter(finish)) {
+    return false;
+  }
+  if (
+    moment(task.start_date)
+      .clone()
+      .add(task.duration, "days")
+      .isBefore(start)
+  ) {
+    return false;
+  }
+
+  return true;
+};
+
+// Get all tasks that are children (have no children of their own).
+export const getAllChildTasks = (store, start, finish) => {
+  const tasks = [];
+
+  if (start === undefined) {
+    tasks = getTasks(store);
+  } else {
+    tasks = getTasks(store).filter(task =>
+      isTaskBetween(moment(start), moment(finish))
+    );
+  }
+
+  const ret = [];
+
+  ret = tasks.filter(task => {
+    const child = tasks.find(childTask => childTask.parent === task.id);
+    return child === undefined;
+  });
+
+  return ret;
+};
+
+export const getUserWorkload = (store, start, finish) => {
+  const ret = {};
+
+  //calculate workload in period - assumes the task is at least partially in period
+  const workloadInPeriod = (
+    taskStart,
+    taskDuration,
+    periodStart,
+    periodFinish
+  ) => {
+    const taskStartInPeriod = moment.max(taskStart, periodStart);
+    const taskFinishInPeriod = moment.min(
+      taskStart + taskDuration,
+      periodFinish
+    );
+    if (taskFinishInPeriod.isBefore(taskStartInPeriod)) return 0; //this would arise if the task is not, in fact in period
+
+    return taskFinishInPeriod.diff(taskStartInPeriod, "days");
+  };
+
+  const tasks = getAllChildTasks(store, start, finish);
+
+  tasks.forEach(task => {
+    if (ret[task.owner_id] === undefined) {
+      ret[task.owner_id] = workloadInPeriod(
+        task.start_date,
+        task.duration,
+        start,
+        finish
+      );
+    } else {
+      ret[task.owner_id] += workloadInPeriod(
+        task.start_date,
+        task.duration,
+        start,
+        finish
+      );
+    }
+  });
+
   return ret;
 };
 
@@ -29,9 +118,6 @@ export const getTasksForUser = (store, userId, start, finish) => {
   }
 };
 
-export const getUsers = store => {
-  return store.tasks.users;
-};
 export const getOwnerOfTask = (store, taskId) => {
   const task = store.tasks.tasks.find(task => task.id === taskId);
   if (task === undefined) return { text: "None" };

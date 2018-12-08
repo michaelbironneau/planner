@@ -289,14 +289,14 @@
     }
   ],
   "users": [
-    { "id": "0", "text": "Alexandra" },
-    { "id": "1", "text": "Bob" },
-    { "id": "2", "text": "Charlie" },
-    { "id": "3", "text": "Dominic" },
-    { "id": "4", "text": "Eugene" },
-    { "id": "5", "text": "Fred" },
-    { "id": "6", "text": "George" },
-    { "id": "7", "text": "Harry" },
-    { "id": "8", "text": "Irene" }
+    { "id": "0", "text": "Alexandra", "rate": 250 },
+    { "id": "1", "text": "Bob", "rate": 250 },
+    { "id": "2", "text": "Charlie", "rate": 250 },
+    { "id": "3", "text": "Dominic", "rate": 250 },
+    { "id": "4", "text": "Eugene", "rate": 250 },
+    { "id": "5", "text": "Fred", "rate": 250 },
+    { "id": "6", "text": "George", "rate": 250 },
+    { "id": "7", "text": "Harry", "rate": 250 },
+    { "id": "8", "text": "Irene", "rate": 250 }
   ]
 }

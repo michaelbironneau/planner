@@ -1,36 +1,51 @@
-import React, { Component } from 'react';
-import { Badge, Card, CardBody, CardHeader, Col, Row, Table } from 'reactstrap';
+import React, { Component } from "react";
+import { Badge, Card, CardBody, CardHeader, Col, Row, Table } from "reactstrap";
+import { getUsers, getUserWorkload } from "../../store/selectors";
+import { connect } from "react-redux";
+import usersData from "./UsersData";
 
-import usersData from './UsersData'
+const mapStateToProps = state => {
+  const users = getUsers();
+};
 
 function UserRow(props) {
-  const user = props.user
-  const userLink = `#/users/${user.id}`
+  const user = props.user;
+  const userLink = `#/users/${user.id}`;
 
-  const getBadge = (status) => {
-    return status === 'Active' ? 'success' :
-      status === 'Inactive' ? 'secondary' :
-        status === 'Pending' ? 'warning' :
-          status === 'Banned' ? 'danger' :
-            'primary'
-  }
+  const getBadge = status => {
+    return status === "Active"
+      ? "success"
+      : status === "Inactive"
+      ? "secondary"
+      : status === "Pending"
+      ? "warning"
+      : status === "Banned"
+      ? "danger"
+      : "primary";
+  };
 
   return (
     <tr key={user.id.toString()}>
-        <th scope="row"><a href={userLink}>{user.id}</a></th>
-        <td><a href={userLink}>{user.name}</a></td>
-        <td>{user.registered}</td>
-        <td>{user.role}</td>
-        <td><Badge href={userLink} color={getBadge(user.status)}>{user.status}</Badge></td>
+      <th scope="row">
+        <a href={userLink}>{user.id}</a>
+      </th>
+      <td>
+        <a href={userLink}>{user.name}</a>
+      </td>
+      <td>{user.registered}</td>
+      <td>{user.role}</td>
+      <td>
+        <Badge href={userLink} color={getBadge(user.status)}>
+          {user.status}
+        </Badge>
+      </td>
     </tr>
-  )
+  );
 }
 
 class Users extends Component {
-
   render() {
-
-    const userList = usersData.filter((user) => user.id < 10)
+    const userList = usersData.filter(user => user.id < 10);
 
     return (
       <div className="animated fadeIn">
@@ -38,7 +53,8 @@ class Users extends Component {
           <Col xl={6}>
             <Card>
               <CardHeader>
-                <i className="fa fa-align-justify"></i> Users <small className="text-muted">example</small>
+                <i className="fa fa-align-justify" /> Users{" "}
+                <small className="text-muted">example</small>
               </CardHeader>
               <CardBody>
                 <Table responsive hover>
@@ -52,9 +68,9 @@ class Users extends Component {
                     </tr>
                   </thead>
                   <tbody>
-                    {userList.map((user, index) =>
-                      <UserRow key={index} user={user}/>
-                    )}
+                    {userList.map((user, index) => (
+                      <UserRow key={index} user={user} />
+                    ))}
                   </tbody>
                 </Table>
               </CardBody>
@@ -62,8 +78,8 @@ class Users extends Component {
           </Col>
         </Row>
       </div>
-    )
+    );
   }
 }
 
-export default Users;
+export default connect()(Users);

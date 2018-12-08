@@ -15,10 +15,8 @@ export class LocalStore {
   };
 
   addTaskReturningId = task => {
-    tasks.push({
-      id: (++nextTaskId).toString(),
-      task
-    });
+    task.id = (++nextTaskId).toString();
+    tasks.push(Object.assign({}, task));
     return nextTaskId.toString();
   };
 
