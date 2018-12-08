@@ -27,31 +27,13 @@ export const getWorkloadInPeriod = (
 };
 
 /**
- * Utility function to determine if the task intersects a given week.
- * @param task the task
- * @param weekStart the start of the week (moment compatible)
- * @returns a boolean
- */
-const taskIsInWeek = (task, weekStart) => {
-  const start = moment(weekStart);
-  const finish = start.clone().add(1, "weeks");
-  const taskStart = moment(task.start_date);
-  const taskFinish = taskStart.clone().add(24 * task.duration, "hours");
-  if (taskFinish.isBefore(start) || taskStart.isAfter(finish)) {
-    return false;
-  } else {
-    return true;
-  }
-};
-
-/**
  * Returns the fraction of task that lies in the week starting at weekStart.
  * @returns a number between 0 and 1.
  */
 const apportionTaskToWeek = (task, weekStart) => {
   const finish = moment(weekStart)
     .clone()
-    .add(1, "weeks");
+    .add(5, "days"); //work week is 5 days
   const apportionedWorkload = getWorkloadInPeriod(
     moment(task.start_date),
     task.duration,

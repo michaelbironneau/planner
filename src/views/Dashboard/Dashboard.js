@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import Gantt from "../Gantt/Gantt";
 import "./Dashboard.scss";
-import { Button, Col, Row } from "reactstrap";
+import { Button, Col, Row, ButtonGroup } from "reactstrap";
 import { Link } from "react-router-dom";
 import { getTasks } from "../../store/selectors";
 import { connect } from "react-redux";
@@ -21,6 +21,7 @@ class Dashboard extends Component {
     this.handleZoomChange = this.handleZoomChange.bind(this);
     this.logTaskUpdate = this.logTaskUpdate.bind(this);
     this.logLinkUpdate = this.logLinkUpdate.bind(this);
+    this.handleZoomChange = this.handleZoomChange.bind(this);
   }
 
   addMessage(message) {
@@ -62,13 +63,38 @@ class Dashboard extends Component {
     return (
       <div className="animated fadeIn">
         <Row className="align-items-left mb-1">
-          <Col sm xs="12" className="mt-3">
+          <Col sm xs="3" className="mt-3">
             <Link to="/projects/new">
               <Button color="primary">
                 <i className="icon-plus icons mr-1" />
                 Add project
               </Button>
             </Link>
+          </Col>
+          <Col sm xs="9" className="mt-3">
+            <ButtonGroup>
+              <Button
+                color="primary"
+                onClick={() => this.handleZoomChange("Hours")}
+                active={this.state.currentZoom === "Hours"}
+              >
+                Hours
+              </Button>
+              <Button
+                color="primary"
+                onClick={() => this.handleZoomChange("Days")}
+                active={this.state.currentZoom === "Days"}
+              >
+                Days
+              </Button>
+              <Button
+                color="primary"
+                onClick={() => this.handleZoomChange("Months")}
+                active={this.state.currentZoom === "Months"}
+              >
+                Months
+              </Button>
+            </ButtonGroup>
           </Col>
         </Row>
         <div className="gantt-container">
