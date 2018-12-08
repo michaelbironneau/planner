@@ -40,17 +40,17 @@ const isTaskBetween = (task, start, finish) => {
 
 // Get all tasks that are children (have no children of their own).
 export const getAllChildTasks = (store, start, finish) => {
-  const tasks = [];
+  let tasks = [];
 
   if (start === undefined) {
-    tasks = getTasks(store);
+    tasks = getTasks(store).tasks;
   } else {
-    tasks = getTasks(store).filter(task =>
+    tasks = getTasks(store).tasks.filter(task =>
       isTaskBetween(moment(start), moment(finish))
     );
   }
 
-  const ret = [];
+  let ret = [];
 
   ret = tasks.filter(task => {
     const child = tasks.find(childTask => childTask.parent === task.id);
@@ -70,13 +70,13 @@ export const getUserWorkload = (store, start, finish) => {
     periodStart,
     periodFinish
   ) => {
-    const taskStartInPeriod = moment.max(taskStart, periodStart);
-    const taskFinishInPeriod = moment.min(
-      taskStart + taskDuration,
+    if (!taskStart || !taskDuration || !periodStart || !periodFinish) return 0;
+    let taskStartInPeriod = moment.max(taskStart, periodStart);
+    let taskFinishInPeriod = moment.min(
+      moment(taskStart).add(taskDuration, "days"),
       periodFinish
     );
-    if (taskFinishInPeriod.isBefore(taskStartInPeriod)) return 0; //this would arise if the task is not, in fact in period
-
+    if (moment(taskFinishInPeriod).isBefore(taskStartInPeriod)) return 0; //this would arise if the task is not, in fact in period
     return taskFinishInPeriod.diff(taskStartInPeriod, "days");
   };
 

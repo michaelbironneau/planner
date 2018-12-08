@@ -3,9 +3,22 @@ import { Badge, Card, CardBody, CardHeader, Col, Row, Table } from "reactstrap";
 import { getUsers, getUserWorkload } from "../../store/selectors";
 import { connect } from "react-redux";
 import usersData from "./UsersData";
+import * as moment from "moment";
 
 const mapStateToProps = state => {
-  const users = getUsers();
+  const users = getUsers(state);
+  const workload = getUserWorkload(
+    state,
+    moment("2017-03-01T00:00:00Z"),
+    moment("2018-04-10T00:00:00Z")
+  );
+  for (let i = 0; i < users.length; i++) {
+    users[i].workload = workload[users[i].id];
+  }
+  console.log(users);
+  return {
+    users: users
+  };
 };
 
 function UserRow(props) {
@@ -82,4 +95,4 @@ class Users extends Component {
   }
 }
 
-export default connect()(Users);
+export default connect(mapStateToProps)(Users);
