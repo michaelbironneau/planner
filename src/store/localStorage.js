@@ -16,10 +16,10 @@ export class LocalStore {
 
   addTaskReturningId = task => {
     tasks.push({
-      id: ++nextTaskId,
+      id: (++nextTaskId).toString(),
       task
     });
-    return nextTaskId;
+    return nextTaskId.toString();
   };
 
   removeTaskById = taskId => {

@@ -46,7 +46,12 @@ class Task extends Component {
 
   componentWillMount() {
     const taskID = this.props.match.params.id;
-    const task = JSON.parse(JSON.stringify(this.props.getTaskById(taskID)));
+    const t = this.props.getTaskById(taskID);
+    if (t === undefined) {
+      console.warn("Undefined task"); //TODO: show 404 or something
+      return;
+    }
+    const task = JSON.parse(JSON.stringify(t));
     this.setState({ task });
   }
 

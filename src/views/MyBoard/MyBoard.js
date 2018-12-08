@@ -3,12 +3,12 @@ import React, { Component } from "react";
 import styled from "react-emotion";
 import { action } from "@storybook/addon-actions";
 import addons, { mockChannel } from "@storybook/addons";
-import { Button } from "reactstrap";
+import { Button, Row, Col, Form, FormGroup, Input } from "reactstrap";
 import { DragDropContext } from "react-beautiful-dnd";
 import TaskList from "./TaskList";
 import { colors, grid } from "./constants";
 import { getTasksForUser, getTasksMap, getTasks } from "../../store/selectors";
-import { setTaskProgress } from "../../store/actions";
+import { setTaskProgress, createTask } from "../../store/actions";
 import { connect } from "react-redux";
 import * as moment from "moment";
 
@@ -242,6 +242,41 @@ class TaskApp extends Component {
     return droppables[disabledDroppableIndex];
   };
 
+  addQuickTask(text) {
+    const task = {
+      start_date: this.state.weekStart.toISOString(),
+      duration: 1,
+      text: text,
+      owner_id: testUserId,
+      progress: 0
+    };
+    this.props.dispatch(createTask(task));
+  }
+
+  renderAddTask() {
+    let newTaskText = "New task";
+    return (
+      <div style={{ width: "250px" }}>
+        <Row>
+          <Col m={12}>
+            <Form inline>
+              <FormGroup>
+                <Input
+                  placeholder="New task"
+                  bsSize="m"
+                  onChange={e => (newTaskText = e.target.value)}
+                />
+                <Button onClick={() => this.addQuickTask(newTaskText)}>
+                  Add
+                </Button>
+              </FormGroup>
+            </Form>
+          </Col>
+        </Row>
+      </div>
+    );
+  }
+
   render() {
     const disabledDroppable = "TODO";
     const taskMap = this.props.taskMap(this.state.weekStart);
@@ -276,7 +311,9 @@ class TaskApp extends Component {
                   showOverdue={true}
                   isDropDisabled={disabledDroppable === "todo"}
                   tasks={taskMap.todo}
+                  enableAddTask={true}
                 />
+                {this.renderAddTask()}
               </Column>
               <Column>
                 <TaskList

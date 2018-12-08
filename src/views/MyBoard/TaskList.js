@@ -6,6 +6,7 @@ import TaskItem from "./TaskItem";
 import { grid, colors } from "./constants";
 import Title from "./Title";
 import { lighten, darken } from "polished";
+import { Input, Button, Form, FormGroup, Row, Col } from "reactstrap";
 
 const Wrapper = styled("div")`
   background-color: ${({ isDraggingOver, backgroundColor }) =>
@@ -93,10 +94,11 @@ class InnerList extends React.Component {
   }
 }
 
-export default class TaskList extends React.Component {
+class TaskList extends React.Component {
   static defaultProps = {
     listId: "LIST"
   };
+
   render() {
     const {
       ignoreContainerClipping,
@@ -151,3 +153,5 @@ export default class TaskList extends React.Component {
     );
   }
 }
+
+export default TaskList;
