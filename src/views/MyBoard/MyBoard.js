@@ -3,19 +3,23 @@ import React, { Component } from "react";
 import styled from "react-emotion";
 import { action } from "@storybook/addon-actions";
 import addons, { mockChannel } from "@storybook/addons";
-
+import { Button } from "reactstrap";
 import { DragDropContext } from "react-beautiful-dnd";
 import TaskList from "./TaskList";
 import { colors, grid } from "./constants";
 import { getTasksForUser, getTasksMap, getTasks } from "../../store/selectors";
 import { setTaskProgress } from "../../store/actions";
 import { connect } from "react-redux";
+import * as moment from "moment";
 
+//Testing only
 const testUserId = "5";
+const today = moment("2017-04-03");
 
-const getTaskMapByProgress = tasks => {
+const getTaskMapByProgress = (tasks, weekStart) => {
   const ret = { todo: [], inprog: [], done: [] };
   for (var i = 0; i < tasks.length; i++) {
+    if (!isTaskInCurrentWeek(tasks[i], weekStart)) continue; //only include tasks in current week
     if (tasks[i].progress == 0) {
       ret.todo.push(tasks[i]);
     } else if (tasks[i].progress > 0 && tasks[i].progress < 1) {
@@ -25,6 +29,25 @@ const getTaskMapByProgress = tasks => {
     }
   }
   return ret;
+};
+
+const isTaskInCurrentWeek = (task, weekStart) => {
+  const weekEnd = weekStart.clone().add(1, "week");
+  //task starts after week end
+  if (moment(task.start_date).isAfter(weekEnd)) {
+    return false;
+  }
+  //task ends before week start
+  if (
+    moment(task.start_date)
+      .clone()
+      .add(task.duration, "days")
+      .isBefore(weekStart)
+  ) {
+    return false;
+  }
+
+  return true;
 };
 
 const mapStateToProps = state => {
@@ -41,6 +64,7 @@ const mapStateToProps = state => {
       }
     }
     if (hasChildren) continue; //don't add tasks with children - just add the children
+    //if (!isTaskInCurrentWeek(userTasks[i])) continue; //only include tasks in the week
     if (userTasks[i].parent) {
       userTasks[i].project = { name: taskMap[userTasks[i].parent].text };
     } else {
@@ -48,7 +72,7 @@ const mapStateToProps = state => {
     }
     ret.push(userTasks[i]);
   }
-  return { taskMap: getTaskMapByProgress(ret) };
+  return { taskMap: weekStart => getTaskMapByProgress(ret, weekStart) };
 };
 
 addons.setChannel(mockChannel());
@@ -93,6 +117,17 @@ const VerticalScrollContainer = styled("div")`
   overflow: auto;
 `;
 
+const WeekScrollBar = styled("div")`
+  display: block;
+  width: 100%;
+  font-size: 1.3em;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 5px;
+  color: rgba(0, 0, 0, 0.8);
+  padding: 1em;
+  text-align: center;
+`;
+
 const PushDown = styled("div")`
   height: 200px;
 `;
@@ -106,10 +141,25 @@ const initialTasks = {
 class TaskApp extends Component {
   /* eslint-disable react/sort-comp */
 
-  state = {
-    //userTasks: this.props.initial
-    userTasks: initialTasks
-  };
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      //userTasks: this.props.initial
+      userTasks: initialTasks,
+      weekStart: moment(today).startOf("isoWeek")
+    };
+    this.incrementWeek = this.incrementWeek.bind(this);
+  }
+
+  incrementWeek(delta) {
+    this.setState({
+      userTasks: this.state.userTasks,
+      weekStart: moment(this.state.weekStart)
+        .clone()
+        .add(delta, "week")
+    });
+  }
 
   onDragStart = initial => {
     publishOnDragStart(initial);
@@ -194,50 +244,66 @@ class TaskApp extends Component {
 
   render() {
     const disabledDroppable = "TODO";
-    const taskMap = this.props.taskMap;
+    const taskMap = this.props.taskMap(this.state.weekStart);
+    const weekNumber = moment(this.state.weekStart).week();
+    const isThisWeek = weekNumber == moment(today).week();
     return (
-      <DragDropContext
-        onDragStart={this.onDragStart}
-        onDragEnd={this.onDragEnd}
-      >
-        <Root className="list-container">
-          <HorizontalScrollContainer>
-            <Column>
-              <TaskList
-                color="#B29CA3"
-                title="Todo"
-                listId="todo"
-                listType="card"
-                showOverdue={true}
-                isDropDisabled={disabledDroppable === "todo"}
-                tasks={taskMap.todo}
-              />
-            </Column>
-            <Column>
-              <TaskList
-                color="#FFF9B3"
-                title="In Progress"
-                listId="inprog"
-                listType="card"
-                showOverdue={false}
-                isDropDisabled={disabledDroppable === "inprog"}
-                tasks={taskMap.inprog}
-              />
-            </Column>
-            <Column>
-              <TaskList
-                color="#77BACC"
-                title="Done"
-                listId="done"
-                listType="card"
-                showOverdue={false}
-                isDropDisabled={disabledDroppable === "done"}
-                tasks={taskMap.done}
-              />
-            </Column>
-          </HorizontalScrollContainer>
-        </Root>
-      </DragDropContext>
+      <div>
+        <WeekScrollBar>
+          <Button className="pull-left" onClick={() => this.incrementWeek(-1)}>
+            &lt;
+          </Button>
+          <span>
+            Week #{weekNumber}
+            {isThisWeek ? " (this week)" : ""}
+          </span>
+          <Button className="pull-right" onClick={() => this.incrementWeek(1)}>
+            &gt;
+          </Button>
+        </WeekScrollBar>
+        <DragDropContext
+          onDragStart={this.onDragStart}
+          onDragEnd={this.onDragEnd}
+        >
+          <Root className="list-container">
+            <HorizontalScrollContainer>
+              <Column>
+                <TaskList
+                  color="#B29CA3"
+                  title="Todo"
+                  listId="todo"
+                  listType="card"
+                  showOverdue={true}
+                  isDropDisabled={disabledDroppable === "todo"}
+                  tasks={taskMap.todo}
+                />
+              </Column>
+              <Column>
+                <TaskList
+                  color="#FFF9B3"
+                  title="In Progress"
+                  listId="inprog"
+                  listType="card"
+                  showOverdue={false}
+                  isDropDisabled={disabledDroppable === "inprog"}
+                  tasks={taskMap.inprog}
+                />
+              </Column>
+              <Column>
+                <TaskList
+                  color="#77BACC"
+                  title="Done"
+                  listId="done"
+                  listType="card"
+                  showOverdue={false}
+                  isDropDisabled={disabledDroppable === "done"}
+                  tasks={taskMap.done}
+                />
+              </Column>
+            </HorizontalScrollContainer>
+          </Root>
+        </DragDropContext>
+      </div>
     );
   }
 }

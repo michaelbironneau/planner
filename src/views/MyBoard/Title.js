@@ -7,6 +7,7 @@ export default styled("h4")`
   flex-grow: 1;
   user-select: none;
   position: relative;
+  text-align: center;
 
   &:focus {
     outline: 2px solid ${colors.purple};

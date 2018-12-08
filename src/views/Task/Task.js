@@ -41,6 +41,7 @@ class Task extends Component {
     this.changeAssignee = this.changeAssignee.bind(this);
     this.save = this.save.bind(this);
     this.delete = this.delete.bind(this);
+    this.changeDuration = this.changeDuration.bind(this);
   }
 
   componentWillMount() {
@@ -55,6 +56,21 @@ class Task extends Component {
     );
     this.state.task.owner_id = newOwner.id;
     this.setState({ task: this.state.task });
+  }
+
+  changeDuration(e) {
+    const task = Object.assign({}, this.state.task);
+    if (e.target.value.length === 0) {
+      task.duration = 0;
+    } else {
+      task.duration = parseInt(e.target.value);
+    }
+
+    if (isNaN(task.duration)) {
+      console.warn("Not a number", e.target.value);
+      return false;
+    }
+    this.setState({ task });
   }
 
   incrementProgress(delta) {
@@ -130,6 +146,24 @@ class Task extends Component {
                   +
                 </Button>
               </ButtonGroup>
+            </Col>
+          </Row>
+          <Row>
+            <Col m="6">
+              <Form>
+                <FormGroup row>
+                  <Label m={2} sm={2}>
+                    Duration (days):
+                  </Label>
+                  <Col m={1} sm={2}>
+                    <Input
+                      type="text"
+                      value={modelTask.duration}
+                      onChange={this.changeDuration}
+                    />
+                  </Col>
+                </FormGroup>
+              </Form>
             </Col>
           </Row>
           <Row>
