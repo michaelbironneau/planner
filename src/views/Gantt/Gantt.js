@@ -8,7 +8,14 @@ import "./critical_path.js";
 import "./Gantt.scss";
 import "./progress_calculation.js";
 import { connect } from "react-redux";
-import { createTask, updateTask, deleteTask } from "../../store/actions";
+import {
+  createTask,
+  updateTask,
+  deleteTask,
+  createLink,
+  updateLink,
+  deleteLink
+} from "../../store/actions";
 
 let resources = [
   { id: undefined, text: "Unassigned" },
@@ -161,18 +168,21 @@ class Gantt extends Component {
     });
 
     gantt.attachEvent("onAfterLinkAdd", (id, link) => {
+      this.props.createLink(link);
       if (this.props.onLinkUpdated) {
         this.props.onLinkUpdated(id, "inserted", link);
       }
     });
 
     gantt.attachEvent("onAfterLinkUpdate", (id, link) => {
+      this.props.updateLink(link);
       if (this.props.onLinkUpdated) {
         this.props.onLinkUpdated(id, "updated", link);
       }
     });
 
     gantt.attachEvent("onAfterLinkDelete", (id, link) => {
+      this.props.deleteLink(id);
       if (this.props.onLinkUpdated) {
         this.props.onLinkUpdated(id, "deleted");
       }
@@ -256,5 +266,5 @@ class Gantt extends Component {
 
 export default connect(
   null,
-  { createTask, updateTask, deleteTask }
+  { createTask, updateTask, deleteTask, createLink, updateLink, deleteLink }
 )(Gantt);

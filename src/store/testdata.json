@@ -7,8 +7,7 @@
       "start_date": "2017-04-02T00:00:00Z",
       "duration": 17,
       "progress": 0.4,
-      "owner_id": "5",
-      "parent": 0
+      "owner_id": "5"
     },
     {
       "id": "asdf-basdf",
@@ -113,7 +112,7 @@
       "start_date": "2017-04-02T00:00:00Z",
       "duration": 13,
       "owner_id": "5",
-      "parent": 0
+      "parent": "0"
     },
     {
       "id": "12",
@@ -175,8 +174,7 @@
       "parent": "13",
       "progress": 1,
       "owner_id": "asdbasdf2",
-      "priority": 2,
-      "external_cost": 150
+      "priority": 2
     },
     {
       "id": "25",

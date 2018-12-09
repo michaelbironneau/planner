@@ -4,10 +4,11 @@ import {
   DELETE_TASK,
   LOAD_ALL_TASKS,
   CREATE_TASKS,
-  SET_TASK_PROGRESS
+  SET_TASK_PROGRESS,
+  CREATE_LINK,
+  UPDATE_LINK,
+  DELETE_LINK
 } from "../actionTypes";
-
-import { LocalStore } from "../localStorage";
 
 const initialState = {
   tasks: [],
@@ -17,13 +18,20 @@ const initialState = {
 
 export default function(state = initialState, action) {
   switch (action.type) {
+    case CREATE_LINK:
+      return JSON.parse(
+        JSON.stringify({
+          tasks: state.tasks,
+          links: [...state.links, action.payload],
+          users: state.users
+        })
+      );
     case CREATE_TASK:
-      console.log(state.tasks.length);
       return JSON.parse(
         JSON.stringify({
           tasks: [...state.tasks, action.payload],
           links: state.links,
-          users: JSON.parse(JSON.stringify(state.users))
+          users: state.users
         })
       );
 
@@ -54,13 +62,33 @@ export default function(state = initialState, action) {
         links: JSON.parse(JSON.stringify(state.links)),
         users: JSON.parse(JSON.stringify(state.users))
       };
+    case UPDATE_LINK:
+      index = state.links.findIndex(link => link.id === action.payload.id);
+      if (index === -1) {
+        console.warn("UPDATE_LINK failed with unknown ID", action.payload.id);
+        return JSON.parse(JSON.stringify(state));
+      }
+      state.links[index] = action.payload;
+      return {
+        tasks: JSON.parse(JSON.stringify(state.tasks)),
+        links: JSON.parse(JSON.stringify(state.links)),
+        users: JSON.parse(JSON.stringify(state.users))
+      };
     case DELETE_TASK:
       index = state.tasks.findIndex(task => task.id === action.payload);
       if (index === -1) {
-        console.warn("DELETE_TASK failed with unknown ID", action.payload.id);
+        console.warn("DELETE_TASK failed with unknown ID", action.payload);
         return JSON.parse(JSON.stringify(state));
       }
       state.tasks.splice(index, 1);
+      return { tasks: state.tasks, links: state.links, users: state.users };
+    case DELETE_LINK:
+      index = state.tasks.findIndex(link => link.id === action.payload);
+      if (index === -1) {
+        console.warn("DELETE_LINK failed with unknown ID", action.payload);
+        return JSON.parse(JSON.stringify(state));
+      }
+      state.links.splice(index, 1);
       return { tasks: state.tasks, links: state.links, users: state.users };
     case LOAD_ALL_TASKS:
       return action.payload;

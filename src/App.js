@@ -6,9 +6,17 @@ import { DefaultLayout } from "./containers";
 // Pages
 import { Login, Page404, Page500, Register } from "./views/Pages";
 
+import { fetchTasks, fetchLinks } from "./store/actions";
+import { connect } from "react-redux";
+
 // import { renderRoutes } from 'react-router-config';
 
 class App extends Component {
+  componentWillMount() {
+    this.props.fetchTasks();
+    this.props.fetchLinks();
+  }
+
   render() {
     return (
       <HashRouter>
@@ -29,4 +37,10 @@ class App extends Component {
   }
 }
 
-export default App;
+export default connect(
+  () => {
+    {
+    }
+  },
+  { fetchTasks, fetchLinks }
+)(App);

@@ -5,10 +5,10 @@ import { Button, Col, Row, ButtonGroup } from "reactstrap";
 import { Link } from "react-router-dom";
 import { getTasks } from "../../store/selectors";
 import { connect } from "react-redux";
-import { fetchTasks } from "../../store/actions";
 
-const mapStateToProps = data => {
-  return { data };
+const mapStateToProps = state => {
+  const tasks = getTasks(state);
+  return { tasks: tasks.tasks, links: tasks.links };
 };
 
 class Dashboard extends Component {
@@ -35,10 +35,6 @@ class Dashboard extends Component {
     this.setState({ messages });
   }
 
-  componentWillMount() {
-    this.props.fetchTasks();
-  }
-
   addBlankProject() {}
 
   logTaskUpdate(id, mode, task) {
@@ -62,7 +58,7 @@ class Dashboard extends Component {
   }
 
   render() {
-    console.log(this.props.tasks);
+    console.log(this.props.links);
     const tasks = this.props.tasks || [];
     const links = this.props.links || [];
     return (
@@ -116,7 +112,4 @@ class Dashboard extends Component {
   }
 }
 
-export default connect(
-  mapStateToProps,
-  { fetchTasks }
-)(Dashboard);
+export default connect(mapStateToProps)(Dashboard);

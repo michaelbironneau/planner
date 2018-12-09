@@ -6,7 +6,9 @@ import {
   CREATE_TASK,
   UPDATE_TASK,
   DELETE_TASK,
-  CREATE_TASKS,
+  CREATE_LINK,
+  UPDATE_LINK,
+  DELETE_LINK,
   LOAD_ALL_TASKS,
   SET_TASK_PROGRESS
 } from "./actionTypes";
@@ -21,13 +23,17 @@ export const createTask = task => {
   tasksRef.push().set(task);
 };
 
-export const setTaskProgress = (taskId, progress) => {
+export const createLink = link => {
+  linksRef.push().set(link);
+};
+
+export const setTaskProgress = (taskId, progress) => async dispatch => {
   tasksRef.child(taskId).update({
     progress: progress
   });
 };
 
-export const createProject = projectAndTasks => {
+export const createProject = projectAndTasks => async dispatch => {
   let { project, tasks } = projectAndTasks;
 
   const projectID = tasksRef.push(project).key;
@@ -39,28 +45,32 @@ export const createProject = projectAndTasks => {
   });
 };
 
+export const updateLink = link => async dispatch => {
+  linksRef.child(link.id).update(link);
+};
+
 export const updateTask = task => async dispatch => {
   tasksRef.child(task.id).update(task);
+};
+
+export const deleteLink = linkId => async dispatch => {
+  linksRef.child(linkId).remove();
 };
 
 export const deleteTask = taskId => async dispatch => {
   tasksRef.child(taskId).remove();
 };
 
-let fetching = false;
+let fetchingTasks = false;
 export const fetchTasks = () => async dispatch => {
-  if (fetching) {
-    console.warn("Already fetching");
+  if (fetchingTasks) {
+    console.warn("Already fetching tasks");
     return;
   }
-  fetching = true;
+  fetchingTasks = true;
   console.log("Fetch tasks instance");
 
-  const ref = firebase
-    .database()
-    .ref("/data")
-    .orderByChild("start_date")
-    .limitToLast(1000);
+  const ref = tasksRef;
   ref.on("child_added", function(data) {
     dispatch({
       type: CREATE_TASK,
@@ -69,7 +79,6 @@ export const fetchTasks = () => async dispatch => {
         id: data.key
       }
     });
-    //console.log("Add", data.key, data.val());
   });
 
   ref.on("child_changed", function(data) {
@@ -80,7 +89,6 @@ export const fetchTasks = () => async dispatch => {
         id: data.key
       }
     });
-    //console.log("Update", data.key, data.val());
   });
 
   ref.on("child_removed", function(data) {
@@ -88,6 +96,43 @@ export const fetchTasks = () => async dispatch => {
       type: DELETE_TASK,
       payload: data.key
     });
-    //console.log("Removed", data.key);
+  });
+};
+
+let fetchingLinks = false;
+export const fetchLinks = () => async dispatch => {
+  if (fetchingLinks) {
+    console.warn("Already fetching links");
+    return;
+  }
+  fetchingLinks = true;
+  console.log("Fetch links instance");
+
+  const ref = linksRef;
+  ref.on("child_added", function(data) {
+    dispatch({
+      type: CREATE_LINK,
+      payload: {
+        ...data.val(),
+        id: data.key
+      }
+    });
+  });
+
+  ref.on("child_changed", function(data) {
+    dispatch({
+      type: UPDATE_LINK,
+      payload: {
+        ...data.val(),
+        id: data.key
+      }
+    });
+  });
+
+  ref.on("child_removed", function(data) {
+    dispatch({
+      type: DELETE_LINK,
+      payload: data.key
+    });
   });
 };

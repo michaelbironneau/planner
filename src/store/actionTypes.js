@@ -4,3 +4,7 @@ export const UPDATE_TASK = "UPDATE_TASK";
 export const DELETE_TASK = "DELETE_TASK";
 export const LOAD_ALL_TASKS = "LOAD_ALL_TASKS";
 export const SET_TASK_PROGRESS = "SET_TASK_PROGRESS";
+
+export const CREATE_LINK = "CREATE_LINK";
+export const UPDATE_LINK = "UPDATE_LINK";
+export const DELETE_LINK = "DELETE_LINK";
