@@ -9,11 +9,16 @@ import {
 
 import { LocalStore } from "../localStorage";
 
-const initialState = new LocalStore().loadStore();
+const initialState = {
+  tasks: [],
+  links: [],
+  users: []
+};
 
 export default function(state = initialState, action) {
   switch (action.type) {
     case CREATE_TASK:
+      console.log(state.tasks.length);
       return JSON.parse(
         JSON.stringify({
           tasks: [...state.tasks, action.payload],
@@ -21,6 +26,7 @@ export default function(state = initialState, action) {
           users: JSON.parse(JSON.stringify(state.users))
         })
       );
+
     case SET_TASK_PROGRESS:
       let index = state.tasks.findIndex(task => task.id === action.payload.id);
       if (index === -1) {

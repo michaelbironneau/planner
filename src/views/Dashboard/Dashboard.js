@@ -5,10 +5,10 @@ import { Button, Col, Row, ButtonGroup } from "reactstrap";
 import { Link } from "react-router-dom";
 import { getTasks } from "../../store/selectors";
 import { connect } from "react-redux";
+import { fetchTasks } from "../../store/actions";
 
-const mapStateToProps = state => {
-  const tasks = getTasks(state);
-  return { tasks: tasks.tasks, links: tasks.links };
+const mapStateToProps = data => {
+  return { data };
 };
 
 class Dashboard extends Component {
@@ -35,7 +35,9 @@ class Dashboard extends Component {
     this.setState({ messages });
   }
 
-  componentDidMount() {}
+  componentWillMount() {
+    this.props.fetchTasks();
+  }
 
   addBlankProject() {}
 
@@ -60,6 +62,9 @@ class Dashboard extends Component {
   }
 
   render() {
+    console.log(this.props.tasks);
+    const tasks = this.props.tasks || [];
+    const links = this.props.links || [];
     return (
       <div className="animated fadeIn">
         <Row className="align-items-left mb-1">
@@ -98,8 +103,8 @@ class Dashboard extends Component {
         <div className="gantt-container">
           <Gantt
             tasks={{
-              data: JSON.parse(JSON.stringify(this.props.tasks)),
-              links: this.props.links
+              data: JSON.parse(JSON.stringify(tasks)),
+              links: links
             }}
             zoom={this.state.currentZoom}
             onTaskUpdated={this.logTaskUpdate}
@@ -111,4 +116,7 @@ class Dashboard extends Component {
   }
 }
 
-export default connect(mapStateToProps)(Dashboard);
+export default connect(
+  mapStateToProps,
+  { fetchTasks }
+)(Dashboard);
