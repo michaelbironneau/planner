@@ -14,7 +14,8 @@ import * as moment from "moment";
 
 //Testing only
 const testUserId = "5";
-const today = moment("2017-04-03");
+//const today = moment("2017-04-03");
+const today = moment();
 
 const getTaskMapByProgress = (tasks, weekStart) => {
   const ret = { todo: [], inprog: [], done: [] };

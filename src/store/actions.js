@@ -8,9 +8,7 @@ import {
   DELETE_TASK,
   CREATE_LINK,
   UPDATE_LINK,
-  DELETE_LINK,
-  LOAD_ALL_TASKS,
-  SET_TASK_PROGRESS
+  DELETE_LINK
 } from "./actionTypes";
 
 firebase.initializeApp(config);
@@ -19,12 +17,16 @@ const tasksRef = databaseRef.child("data");
 const linksRef = databaseRef.child("links");
 const usersRef = databaseRef.child("users");
 
-export const createTask = task => {
-  tasksRef.push().set(task);
+export const createTask = task => async dispatch => {
+  const toInsert = Object.assign({}, task);
+  delete toInsert["id"]; //otherwise this creates two tasks - one with local ID and one with remote ID...
+  tasksRef.push().set(toInsert);
 };
 
-export const createLink = link => {
-  linksRef.push().set(link);
+export const createLink = link => async dispatch => {
+  const toInsert = Object.assign({}, link);
+  delete toInsert["id"]; //otherwise this creates two links - one with local ID and one with remote ID...
+  linksRef.push().set(toInsert);
 };
 
 export const setTaskProgress = (taskId, progress) => async dispatch => {

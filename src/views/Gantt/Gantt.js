@@ -116,14 +116,6 @@ class Gantt extends Component {
     gantt.config.columns = c;
   }
 
-  shouldComponentUpdate(nextProps) {
-    return this.props.zoom !== nextProps.zoom;
-  }
-
-  componentDidUpdate() {
-    gantt.render();
-  }
-
   stripHiddenProps(task) {
     const ret = {};
     for (var prop in task) {
@@ -145,13 +137,14 @@ class Gantt extends Component {
     });
 
     gantt.attachEvent("onAfterTaskAdd", (id, task) => {
-      const newID = this.props.createTask(this.stripHiddenProps(task)).payload
-        .id;
+      console.log("After task add");
+      const newID = this.props.createTask(this.stripHiddenProps(task));
       const oldID = task.id;
       gantt.changeTaskId(oldID, newID);
     });
 
     gantt.attachEvent("onAfterTaskUpdate", (id, task) => {
+      console.log("After task udpate");
       try {
         this.props.updateTask(this.stripHiddenProps(task));
       } catch (ex) {
@@ -213,6 +206,10 @@ class Gantt extends Component {
   componentDidMount() {
     this.initGanttEvents();
     gantt.init(this.ganttContainer);
+    gantt.parse(this.parseDatesInTasks(this.props.tasks));
+  }
+
+  componentDidUpdate() {
     gantt.parse(this.parseDatesInTasks(this.props.tasks));
   }
 

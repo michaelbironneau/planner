@@ -13,7 +13,10 @@ import { getUsers, getUserWorkload } from "../../store/selectors";
 import { connect } from "react-redux";
 import * as moment from "moment";
 
-const today = moment("2017-04-03");
+//testing only
+//const today = moment("2017-04-03");
+
+const today = moment();
 
 const mapStateToProps = state => {
   const getUserWorkloadForDates = (start, finish) => {

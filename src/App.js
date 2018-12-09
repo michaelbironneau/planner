@@ -39,8 +39,7 @@ class App extends Component {
 
 export default connect(
   () => {
-    {
-    }
+    return {};
   },
   { fetchTasks, fetchLinks }
 )(App);

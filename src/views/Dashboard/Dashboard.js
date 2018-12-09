@@ -58,7 +58,6 @@ class Dashboard extends Component {
   }
 
   render() {
-    console.log(this.props.links);
     const tasks = this.props.tasks || [];
     const links = this.props.links || [];
     return (
@@ -99,7 +98,7 @@ class Dashboard extends Component {
         <div className="gantt-container">
           <Gantt
             tasks={{
-              data: JSON.parse(JSON.stringify(tasks)),
+              data: tasks,
               links: links
             }}
             zoom={this.state.currentZoom}
