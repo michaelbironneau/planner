@@ -42,6 +42,7 @@ class Task extends Component {
     this.save = this.save.bind(this);
     this.delete = this.delete.bind(this);
     this.changeDuration = this.changeDuration.bind(this);
+    this.changeExternalCost = this.changeExternalCost.bind(this);
   }
 
   componentWillMount() {
@@ -69,6 +70,12 @@ class Task extends Component {
     this.setState({ task });
   }
 
+  changeExternalCost(e) {
+    const task = Object.assign({}, this.state.task);
+    task.external_cost = e.target.value;
+    this.setState({ task });
+  }
+
   incrementProgress(delta) {
     const task = Object.assign({}, this.state.task);
     task.progress = Math.max(0, Math.min(1, task.progress + delta));
@@ -78,11 +85,16 @@ class Task extends Component {
   save() {
     const task = Object.assign({}, this.state.task);
     task.duration = parseFloat(task.duration);
+    task.external_cost = parseFloat(task.external_cost);
     if (isNaN(task.duration)) {
       console.warn("Invalid duration", task); //TODO: Error message
       return;
     }
-    this.props.updateTask(this.state.task);
+    if (isNaN(task.external_cost)) {
+      console.warn("Invalid external cost", task); //TODO: Error message
+      return;
+    }
+    this.props.updateTask(task);
     this.context.router.history.goBack();
   }
 
@@ -160,6 +172,24 @@ class Task extends Component {
                       type="text"
                       value={modelTask.duration}
                       onChange={this.changeDuration}
+                    />
+                  </Col>
+                </FormGroup>
+              </Form>
+            </Col>
+          </Row>
+          <Row>
+            <Col m="6">
+              <Form>
+                <FormGroup row>
+                  <Label m={2} sm={2}>
+                    External cost (£):
+                  </Label>
+                  <Col m={1} sm={2}>
+                    <Input
+                      type="text"
+                      value={modelTask.external_cost || 0}
+                      onChange={this.changeExternalCost}
                     />
                   </Col>
                 </FormGroup>

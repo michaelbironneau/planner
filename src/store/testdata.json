@@ -175,7 +175,8 @@
       "parent": "13",
       "progress": 1,
       "owner_id": "asdbasdf2",
-      "priority": 2
+      "priority": 2,
+      "external_cost": 150
     },
     {
       "id": "25",

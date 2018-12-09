@@ -29,8 +29,8 @@ export const getWorkloadInPeriod = (
 };
 
 /**
- * Returns the fraction of task that lies in the week starting at weekStart.
- * @returns a number between 0 and 1.
+ * Returns the duration of the task that lies in the week starting at weekStart.
+ * @returns a number less than task.duration.
  */
 const apportionTaskToWeek = (task, weekStart) => {
   const finish = moment(weekStart)
@@ -64,10 +64,11 @@ export const getTaskCostsPerWeek = (
   let current = start;
   while (current.isBefore(finish)) {
     const frac = apportionTaskToWeek(task, current);
+    const duration = task.duration === 0 ? 1 : task.duration;
     ret.push({
       weekStart: current.clone().week(),
       internalCost: frac * (taskOwner.rate || 0),
-      externalCost: frac * (task.external_cost || 0),
+      externalCost: (frac / duration) * (task.external_cost || 0),
       apportionedDuration: frac
     });
     current.add(1, "week"); //Moment mutates the object. Caveat emptor.
