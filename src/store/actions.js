@@ -20,7 +20,8 @@ const usersRef = databaseRef.child("users");
 export const createTask = task => async dispatch => {
   const toInsert = Object.assign({}, task);
   delete toInsert["id"]; //otherwise this creates two tasks - one with local ID and one with remote ID...
-  tasksRef.push().set(toInsert);
+  const newTaskRef = tasksRef.push(toInsert);
+  return newTaskRef.key;
 };
 
 export const createLink = link => async dispatch => {

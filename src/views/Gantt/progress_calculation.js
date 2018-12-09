@@ -31,7 +31,8 @@
   });
 
   gantt.attachEvent("onAfterTaskAdd", function onAfterTaskAdd(id) {
-    gantt.batchUpdate(checkParents(id));
+    //MB: Possibly interfering with Firebase ID swap
+    //gantt.batchUpdate(checkParents(id));
   });
 
   gantt.attachEvent("onBeforeTaskDelete", function onBeforeTaskDelete(
@@ -58,7 +59,7 @@
     // Discard the time and time-zone information.
     const utc1 = Date.UTC(a.getFullYear(), a.getMonth(), a.getDate());
     const utc2 = Date.UTC(b.getFullYear(), b.getMonth(), b.getDate());
-  
+
     return Math.floor((utc2 - utc1) / _MS_PER_DAY);
   }
   function calculateSummaryProgress(task) {
@@ -85,19 +86,24 @@
         if (child.start_date) {
           const s = new Date(child.start_date.getTime());
           const t = new Date(child.end_date.getTime());
-          if (earliestStartDate == null || s.getTime() < earliestStartDate.getTime()) earliestStartDate = s;
+          if (
+            earliestStartDate == null ||
+            s.getTime() < earliestStartDate.getTime()
+          )
+            earliestStartDate = s;
           latestEndDate =
-            latestEndDate.getTime() > t.getTime()
-              ? latestEndDate
-              : t;
+            latestEndDate.getTime() > t.getTime() ? latestEndDate : t;
         }
       }
     }, task.id);
-    if (!totalToDo){
-      return { progress: 0, duration: 0, start_date: earliestStartDate, end_date: earliestStartDate};
-    }
- 
-    else {
+    if (!totalToDo) {
+      return {
+        progress: 0,
+        duration: 0,
+        start_date: earliestStartDate,
+        end_date: earliestStartDate
+      };
+    } else {
       return {
         progress: totalDone / totalToDo,
         duration: dateDiffInDays(earliestStartDate, latestEndDate),
@@ -105,7 +111,6 @@
         end_date: latestEndDate
       };
     }
-      
   }
 
   function refreshSummaryProgress(id, submit) {
@@ -117,7 +122,6 @@
     task.duration = summary.duration;
     task.end_date = summary.end_date;
     task.start_date = summary.start_date;
-    
 
     if (!submit) {
       gantt.refreshTask(id);

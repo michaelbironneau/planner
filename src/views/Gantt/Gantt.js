@@ -16,6 +16,7 @@ import {
   updateLink,
   deleteLink
 } from "../../store/actions";
+import { getTaskById } from "../../store/selectors";
 
 let resources = [
   { id: undefined, text: "Unassigned" },
@@ -29,6 +30,12 @@ let resources = [
   { id: "7", text: "Harry" },
   { id: "8", text: "Irene" }
 ];
+
+const mapStateToProps = state => {
+  return {
+    getTaskById: taskId => getTaskById(state, taskId)
+  };
+};
 
 class Gantt extends Component {
   setZoom(value) {
@@ -137,21 +144,36 @@ class Gantt extends Component {
     });
 
     gantt.attachEvent("onAfterTaskAdd", (id, task) => {
-      console.log("After task add");
-      const newID = this.props.createTask(this.stripHiddenProps(task));
-      const oldID = task.id;
-      gantt.changeTaskId(oldID, newID);
+      //console.log("Add", task);
+      if (task.start_date && task.end_date) {
+        const immutableTask = JSON.parse(
+          JSON.stringify(this.stripHiddenProps(task))
+        );
+        const oldID = task.id;
+        this.props.createTask(immutableTask).then(newID => {
+          //console.log("Changing ID", oldID, newID);
+          //gantt.changeTaskId(oldID, newID);
+        });
+      }
     });
 
     gantt.attachEvent("onAfterTaskUpdate", (id, task) => {
-      console.log("After task udpate");
-      try {
-        this.props.updateTask(this.stripHiddenProps(task));
-      } catch (ex) {
-        console.warn(ex);
-        console.log(id, task);
+      const immutableTask = JSON.parse(JSON.stringify(task));
+      //console.log("Update", this.stripHiddenProps(immutableTask));
+      //check if to insert or update
+      if (this.props.getTaskById(id)) {
+        //update
+        this.props.updateTask(this.stripHiddenProps(immutableTask));
+      } else {
+        //insert
+        const oldID = task.id;
+        this.props
+          .createTask(this.stripHiddenProps(immutableTask))
+          .then(newID => {
+            //console.log("Changing ID", oldID, newID);
+            //gantt.changeTaskId(oldID, newID);
+          });
       }
-
       //console.log("Update", task, JSON.parse(JSON.stringify(task)));
     });
 
@@ -187,10 +209,10 @@ class Gantt extends Component {
     });
   }
 
-  parseDatesInTasks() {
+  parseDatesInTasks(tasks) {
     return {
-      links: this.props.tasks.links,
-      data: this.props.tasks.data.map(task => {
+      links: tasks.links,
+      data: tasks.data.map(task => {
         const c = task;
         if (task.start_date) {
           c.start_date = new Date(task.start_date);
@@ -205,12 +227,24 @@ class Gantt extends Component {
 
   componentDidMount() {
     this.initGanttEvents();
+    //console.log("Mounted", JSON.parse(JSON.stringify(this.props.tasks)));
     gantt.init(this.ganttContainer);
-    gantt.parse(this.parseDatesInTasks(this.props.tasks));
+    gantt.parse(
+      this.parseDatesInTasks(JSON.parse(JSON.stringify(this.props.tasks)))
+    );
   }
 
   componentDidUpdate() {
-    gantt.parse(this.parseDatesInTasks(this.props.tasks));
+    //console.log("Updated", JSON.parse(JSON.stringify(this.props.tasks)));
+    gantt.init(this.ganttContainer);
+    gantt.unselectTask();
+    gantt.clearAll();
+    gantt.resetLightbox();
+    gantt.parse(
+      this.parseDatesInTasks(JSON.parse(JSON.stringify(this.props.tasks)))
+    );
+    gantt.setSizes();
+    gantt.render();
   }
 
   render() {
@@ -262,6 +296,6 @@ class Gantt extends Component {
 }
 
 export default connect(
-  null,
+  mapStateToProps,
   { createTask, updateTask, deleteTask, createLink, updateLink, deleteLink }
 )(Gantt);
