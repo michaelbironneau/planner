@@ -20,6 +20,7 @@ import {
   getProjectKPIs,
   getTaskDisplayName
 } from "../../store/selectors";
+import ReactToPrint from "react-to-print";
 
 import * as moment from "moment";
 
@@ -81,7 +82,6 @@ class Projects extends Component {
   }
 
   renderUnassignedWarning(stats) {
-    console.log(stats);
     const unassigned = stats.stats.find(
       stat => stat.owner.text === "Unassigned"
     );
@@ -321,7 +321,6 @@ class Projects extends Component {
 
   renderNonemptyTable() {
     const stats = this.props.getProjectKPIs(this.state.projectId);
-    console.log(stats);
     return (
       <div>
         <h1>Project Name</h1>
@@ -339,15 +338,11 @@ class Projects extends Component {
     );
   }
 
-  render() {
+  renderPrintableContent() {
     return (
       <Container>
         <Card>
           <CardHeader>
-            <Button outline color="primary" className="pull-right">
-              <i className="fa fa-print" />
-              &nbsp;To Excel
-            </Button>
             <Form inline>
               <Label>
                 <i className="fa fa-bars" />
@@ -375,6 +370,25 @@ class Projects extends Component {
           </CardBody>
         </Card>
       </Container>
+    );
+  }
+
+  render() {
+    return (
+      <div>
+        <ReactToPrint
+          trigger={() => (
+            <Button outline color="primary" className="pull-right">
+              <i className="fa fa-print" />
+              &nbsp;Print
+            </Button>
+          )}
+          content={() => this.componentRef}
+        />
+        <div ref={el => (this.componentRef = el)}>
+          {this.renderPrintableContent()}
+        </div>
+      </div>
     );
   }
 }
