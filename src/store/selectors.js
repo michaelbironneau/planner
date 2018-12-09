@@ -1,4 +1,5 @@
 import * as moment from "moment";
+import { getEndDate } from "./endDate";
 
 import { getWorkloadInPeriod, getTaskCostsPerWeek } from "./kpis";
 
@@ -7,6 +8,11 @@ export const getTasks = store => JSON.parse(JSON.stringify(store.tasks));
 export const getLinks = store => JSON.parse(JSON.stringify(store.links));
 
 export const getUsers = store => JSON.parse(JSON.stringify(store.tasks.users));
+
+export const getProjects = store =>
+  JSON.parse(
+    JSON.stringify(store.tasks.tasks.filter(task => task.type === "project"))
+  );
 
 export const getTaskById = (store, id) => {
   return store.tasks.tasks.find(task => task.id === id);
@@ -117,6 +123,83 @@ export const getTaskDisplayName = (store, taskId) => {
   const task = store.tasks.tasks.find(task => task.id === taskId);
   if (task === undefined) return "Unknown";
   if (!task.parent) return task.text;
-  const parent = store.tasks.tasks.find((parent = parent.id === task.parent));
+  const parent = store.tasks.tasks.find(
+    maybeParent => maybeParent.id === task.parent
+  );
   return parent.text + " > " + task.text;
+};
+
+export const getProjectKPIs = (store, taskId) => {
+  const projectTask = getTaskById(store, taskId);
+  //0. Get project real start and end dates from project task
+  let startDate = projectTask.start_date;
+  let endDate = getEndDate(projectTask);
+
+  //0. Get mean day rate in case any tasks are unscheduled
+  const defaultOwner = {
+    id: null,
+    text: "Unassigned",
+    rate: 0
+  };
+
+  if (store.tasks.users.length) {
+    const sum = store.tasks.users.reduce(function(a, b) {
+      return a + b.rate;
+    }, 0);
+    defaultOwner.rate = sum / store.tasks.users.length;
+  }
+
+  //1. Enumerate child tasks
+  const children = {};
+
+  store.tasks.tasks.forEach(task => {
+    if (!task.parent) return;
+    if (!children[task.parent]) {
+      children[task.parent] = [task];
+    } else {
+      children[task.parent].push(task);
+    }
+  });
+
+  //2. Now, find the ones that actually belong to the project
+  const recurseToChildren = (childMap, key) => {
+    let rootChildren = [];
+    if (!childMap[key]) return rootChildren;
+    childMap[key].forEach(child => {
+      if (!childMap[child.id]) {
+        rootChildren.push(child);
+      } else {
+        rootChildren = [
+          ...rootChildren,
+          ...recurseToChildren(childMap, child.id)
+        ];
+      }
+    });
+    return rootChildren;
+  };
+
+  const rootChildren = recurseToChildren(children, taskId);
+
+  //2. Get stats
+  const stats = rootChildren.map(child => {
+    if (moment(child.start_date).isBefore(startDate))
+      startDate = child.start_date;
+    if (moment(getEndDate(child)).isAfter(endDate)) endDate = getEndDate(child);
+    let owner = getOwnerOfTask(store, child.id);
+    if (!owner.id) owner = defaultOwner;
+    const taskStats = getTaskCostsPerWeek(child, owner, startDate, endDate);
+    return {
+      name: getTaskDisplayName(store, child.id),
+      owner: owner,
+      stats: taskStats
+    };
+  });
+
+  //3. Format return
+  const scheduling = {
+    start: startDate,
+    finish: endDate
+  };
+
+  return { scheduling, stats };
 };
