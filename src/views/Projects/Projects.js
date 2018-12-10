@@ -25,7 +25,7 @@ import ReactToPrint from "react-to-print";
 import * as moment from "moment";
 
 Array.range = (start, end) =>
-  Array.from({ length: end - start }, (v, k) => k + start);
+  Array.from({ length: end - start + 1 }, (v, k) => k + start);
 
 const mapStateToProps = state => {
   return {
@@ -100,6 +100,7 @@ class Projects extends Component {
   renderResourceTable(stats) {
     const startWeek = moment(stats.scheduling.start).week();
     const endWeek = moment(stats.scheduling.finish).week();
+    console.log(startWeek, endWeek);
     return (
       <div>
         <Table responsive hover>
