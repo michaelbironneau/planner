@@ -8,7 +8,11 @@ import {
   DELETE_TASK,
   CREATE_LINK,
   UPDATE_LINK,
-  DELETE_LINK
+  DELETE_LINK,
+  CREATE_USER,
+  UPDATE_USER,
+  DELETE_USER,
+  SET_CURRENT_USER
 } from "./actionTypes";
 
 firebase.initializeApp(config);
@@ -16,6 +20,13 @@ const databaseRef = firebase.database().ref();
 const tasksRef = databaseRef.child("data");
 const linksRef = databaseRef.child("links");
 const usersRef = databaseRef.child("users");
+
+export const setCurrentUser = user => {
+  return {
+    type: SET_CURRENT_USER,
+    payload: user
+  };
+};
 
 export const createTask = task => async dispatch => {
   const toInsert = Object.assign({}, task);
@@ -135,6 +146,44 @@ export const fetchLinks = () => async dispatch => {
   ref.on("child_removed", function(data) {
     dispatch({
       type: DELETE_LINK,
+      payload: data.key
+    });
+  });
+};
+
+let fetchingUsers = false;
+export const fetchUsers = () => async dispatch => {
+  if (fetchingUsers) {
+    console.warn("Already fetching users");
+    return;
+  }
+  fetchingUsers = true;
+  console.log("Fetch users instance");
+
+  const ref = usersRef;
+  ref.on("child_added", function(data) {
+    dispatch({
+      type: CREATE_USER,
+      payload: {
+        ...data.val(),
+        id: data.key
+      }
+    });
+  });
+
+  ref.on("child_changed", function(data) {
+    dispatch({
+      type: UPDATE_USER,
+      payload: {
+        ...data.val(),
+        id: data.key
+      }
+    });
+  });
+
+  ref.on("child_removed", function(data) {
+    dispatch({
+      type: DELETE_USER,
       payload: data.key
     });
   });

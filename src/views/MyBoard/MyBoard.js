@@ -7,7 +7,12 @@ import { Button, Row, Col, Form, FormGroup, Input } from "reactstrap";
 import { DragDropContext } from "react-beautiful-dnd";
 import TaskList from "./TaskList";
 import { colors, grid } from "./constants";
-import { getTasksForUser, getTasksMap, getTasks } from "../../store/selectors";
+import {
+  getTasksForUser,
+  getTasksMap,
+  getTasks,
+  getUserByEmail
+} from "../../store/selectors";
 import { setTaskProgress, createTask } from "../../store/actions";
 import { connect } from "react-redux";
 import * as moment from "moment";

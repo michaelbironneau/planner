@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
-import { Redirect, Route, Switch } from 'react-router-dom';
-import { Container } from 'reactstrap';
-import firebase from 'firebase';
+import React, { Component } from "react";
+import { Redirect, Route, Switch } from "react-router-dom";
+import { Container } from "reactstrap";
+import firebase from "firebase";
 
 import {
   AppAside,
@@ -13,28 +13,32 @@ import {
   AppSidebarForm,
   AppSidebarHeader,
   AppSidebarMinimizer,
-  AppSidebarNav,
-} from '@coreui/react';
+  AppSidebarNav
+} from "@coreui/react";
 // sidebar nav config
-import navigation from '../../_nav';
+import navigation from "../../_nav";
 // routes config
-import routes from '../../routes';
-import DefaultAside from './DefaultAside';
-import DefaultFooter from './DefaultFooter';
-import DefaultHeader from './DefaultHeader';
+import routes from "../../routes";
+import DefaultAside from "./DefaultAside";
+import DefaultFooter from "./DefaultFooter";
+import DefaultHeader from "./DefaultHeader";
 import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import { setCurrentUser } from "../../store/actions";
 
 class DefaultLayout extends Component {
   static contextTypes = {
     router: PropTypes.object.isRequired
   };
 
-  componentWillMount(){
+  componentWillMount() {
+    let self = this;
     firebase.auth().onAuthStateChanged(function(user) {
       if (!user) {
-        this.context.router.history.push('login');
+        this.context.router.history.push("login");
       } else {
-        console.log('User logged in', user.email, user.displayName);
+        console.log("User logged in", user.email);
+        self.props.dispatch(setCurrentUser({ email: user.email }));
       }
     });
   }
@@ -54,16 +58,20 @@ class DefaultLayout extends Component {
             <AppSidebarMinimizer />
           </AppSidebar>
           <main className="main">
-            <AppBreadcrumb appRoutes={routes}/>
+            <AppBreadcrumb appRoutes={routes} />
             <Container fluid>
               <Switch>
                 {routes.map((route, idx) => {
-                    return route.component ? (<Route key={idx} path={route.path} exact={route.exact} name={route.name} render={props => (
-                        <route.component {...props} />
-                      )} />)
-                      : (null);
-                  },
-                )}
+                  return route.component ? (
+                    <Route
+                      key={idx}
+                      path={route.path}
+                      exact={route.exact}
+                      name={route.name}
+                      render={props => <route.component {...props} />}
+                    />
+                  ) : null;
+                })}
                 <Redirect from="/" to="/dashboard" />
               </Switch>
             </Container>
@@ -80,4 +88,4 @@ class DefaultLayout extends Component {
   }
 }
 
-export default DefaultLayout;
+export default connect()(DefaultLayout);

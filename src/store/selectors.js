@@ -9,6 +9,11 @@ export const getLinks = store => JSON.parse(JSON.stringify(store.links));
 
 export const getUsers = store => JSON.parse(JSON.stringify(store.tasks.users));
 
+export const getUserByEmail = (store, email) =>
+  store.tasks.users.find(
+    user => (user.email || "").toLowerCase() === email.toLowerCase()
+  );
+
 export const getProjects = store =>
   JSON.parse(
     JSON.stringify(store.tasks.tasks.filter(task => task.type === "project"))

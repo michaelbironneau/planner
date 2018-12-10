@@ -6,15 +6,17 @@ import { DefaultLayout } from "./containers";
 // Pages
 import { Login, Page404, Page500, Register } from "./views/Pages";
 
-import { fetchTasks, fetchLinks } from "./store/actions";
+import { fetchTasks, fetchLinks, fetchUsers } from "./store/actions";
 import { connect } from "react-redux";
 
 // import { renderRoutes } from 'react-router-config';
 
 class App extends Component {
   componentWillMount() {
+    //Single point to initialize data updates throughout the app
     this.props.fetchTasks();
     this.props.fetchLinks();
+    this.props.fetchUsers();
   }
 
   render() {
@@ -41,5 +43,5 @@ export default connect(
   () => {
     return {};
   },
-  { fetchTasks, fetchLinks }
+  { fetchTasks, fetchLinks, fetchUsers }
 )(App);
