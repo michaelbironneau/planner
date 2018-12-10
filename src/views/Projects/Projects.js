@@ -100,7 +100,6 @@ class Projects extends Component {
   renderResourceTable(stats) {
     const startWeek = moment(stats.scheduling.start).week();
     const endWeek = moment(stats.scheduling.finish).week();
-    console.log(startWeek, endWeek);
     return (
       <div>
         <Table responsive hover>

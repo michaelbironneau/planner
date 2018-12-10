@@ -55,7 +55,7 @@ function UserRow(props) {
       <td className={"text-center " + getColorForWorkload(user.workload)}>
         {user.workload || 0}&nbsp;days
       </td>
-      <td>£{user.rate}/day</td>
+      {/*<td>£{user.rate}/day</td>*/}
     </tr>
   );
 }
@@ -136,7 +136,7 @@ class Users extends Component {
                           </Button>
                         </p>
                       </th>
-                      <th scope="col">Rate</th>
+                      {/*<th scope="col">Rate</th>*/}
                     </tr>
                   </thead>
                   <tbody>

@@ -69,6 +69,7 @@ export const getTaskCostsPerWeek = (
       weekStart: current.clone().week(),
       internalCost: frac * (taskOwner.rate || 0),
       externalCost: (frac / duration) * (task.external_cost || 0),
+      chargeableRate: frac * (taskOwner.chargeableRate || 0),
       apportionedDuration: frac
     });
     current.add(1, "week"); //Moment mutates the object. Caveat emptor.
