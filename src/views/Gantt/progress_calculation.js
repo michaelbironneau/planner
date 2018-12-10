@@ -15,6 +15,7 @@
   function setTaskType(id) {
     id = id.id ? id.id : id;
     var task = gantt.getTask(id);
+    if (task.type === gantt.config.types.project) return; //never change projects to tasks
     var type = gantt.hasChild(task.id)
       ? gantt.config.types.project
       : gantt.config.types.task;

@@ -52,10 +52,10 @@ export const createProject = projectAndTasks => async dispatch => {
 
   const projectID = tasksRef.push(project).key;
   project.id = projectID;
-
-  tasks.forEach((task, index) => async dispatch => {
+  tasks.forEach((task, index) => {
+    delete tasks[index]["id"];
     tasks[index].parent = projectID;
-    tasksRef.push(task);
+    const key = tasksRef.push(tasks[index]);
   });
 };
 

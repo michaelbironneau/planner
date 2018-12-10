@@ -151,8 +151,8 @@ class Gantt extends Component {
     });
 
     gantt.attachEvent("onAfterTaskAdd", (id, task) => {
-      //console.log("Add", task);
-      if (task.start_date && task.end_date) {
+      console.log("Add", task);
+      if (task.start_date || task.unscheduled) {
         const immutableTask = JSON.parse(
           JSON.stringify(this.stripHiddenProps(task))
         );
@@ -166,7 +166,7 @@ class Gantt extends Component {
 
     gantt.attachEvent("onAfterTaskUpdate", (id, task) => {
       const immutableTask = JSON.parse(JSON.stringify(task));
-      //console.log("Update", this.stripHiddenProps(immutableTask));
+      console.log("Update", this.stripHiddenProps(immutableTask));
       //check if to insert or update
       if (this.props.getTaskById(id)) {
         //update

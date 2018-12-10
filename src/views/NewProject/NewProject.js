@@ -16,6 +16,7 @@ import "./NewProject.scss";
 import { createProject } from "../../store/actions";
 import { connect } from "react-redux";
 import { newTask } from "../../models/task";
+import * as moment from "moment";
 
 class NewProject extends Component {
   constructor(props) {
@@ -37,7 +38,16 @@ class NewProject extends Component {
   onAddTask() {
     this.state.tasks.push({
       text: "",
-      duration: 1
+      duration: 1,
+      start_date: moment()
+        .startOf("day")
+        .toISOString(),
+      end_date: moment()
+        .startOf("day")
+        .toISOString(),
+      unscheduled: true,
+      owner_id: null,
+      progress: 0
     });
     this.setState({ tasks: [...this.state.tasks] });
   }
@@ -56,7 +66,21 @@ class NewProject extends Component {
     }
     try {
       this.props.createProject({
-        project: newTask({ text: this.state.name, type: "project" }),
+        project: newTask({
+          text: this.state.name,
+          type: "project",
+          parent: 0, //root
+          owner_id: null,
+          progress: 0,
+          duration: 0,
+          start_date: moment()
+            .startOf("day")
+            .toISOString(),
+          end_date: moment()
+            .startOf("day")
+            .toISOString(),
+          unscheduled: true
+        }),
         tasks: this.state.tasks.map(task => newTask(task))
       });
       this.onResetProject();
