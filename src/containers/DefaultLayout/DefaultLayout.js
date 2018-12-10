@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import { Container } from 'reactstrap';
+import firebase from 'firebase';
 
 import {
   AppAside,
@@ -21,8 +22,23 @@ import routes from '../../routes';
 import DefaultAside from './DefaultAside';
 import DefaultFooter from './DefaultFooter';
 import DefaultHeader from './DefaultHeader';
+import PropTypes from "prop-types";
 
 class DefaultLayout extends Component {
+  static contextTypes = {
+    router: PropTypes.object.isRequired
+  };
+
+  componentWillMount(){
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (!user) {
+        this.context.router.history.push('login');
+      } else {
+        console.log('User logged in', user.email, user.displayName);
+      }
+    });
+  }
+
   render() {
     return (
       <div className="app">

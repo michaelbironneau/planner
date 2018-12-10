@@ -236,15 +236,15 @@ class Gantt extends Component {
 
   componentDidUpdate() {
     //console.log("Updated", JSON.parse(JSON.stringify(this.props.tasks)));
-    gantt.init(this.ganttContainer);
-    gantt.unselectTask();
+    //gantt.init(this.ganttContainer);
+    //gantt.unselectTask();
     gantt.clearAll();
     gantt.resetLightbox();
     gantt.parse(
       this.parseDatesInTasks(JSON.parse(JSON.stringify(this.props.tasks)))
     );
-    gantt.setSizes();
-    gantt.render();
+    //gantt.setSizes();
+    //gantt.render();
   }
 
   render() {
@@ -255,6 +255,7 @@ class Gantt extends Component {
     //gantt.config.autosize = "xy";
     gantt.config.work_time = true;
     gantt.config.show_unscheduled = true;
+    gantt.config.open_tree_initially = true;
     gantt.locale.labels.time_enable_button = "Schedule";
     gantt.locale.labels.time_disable_button = "Unschedule";
     gantt.locale.labels.section_owner = "Assigned to";
