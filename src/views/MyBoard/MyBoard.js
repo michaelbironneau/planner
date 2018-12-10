@@ -11,15 +11,13 @@ import {
   getTasksForUser,
   getTasksMap,
   getTasks,
-  getUserByEmail
+  getUserByEmail,
+  getCurrentuser
 } from "../../store/selectors";
 import { setTaskProgress, createTask } from "../../store/actions";
 import { connect } from "react-redux";
 import * as moment from "moment";
 
-//Testing only
-const testUserId = "5";
-//const today = moment("2017-04-03");
 const today = moment();
 
 const getTaskMapByProgress = (tasks, weekStart) => {
@@ -58,7 +56,10 @@ const isTaskInCurrentWeek = (task, weekStart) => {
 };
 
 const mapStateToProps = state => {
-  const userTasks = getTasksForUser(state, testUserId);
+  const userEmail = getCurrentuser(state);
+  let currentUser = getUserByEmail(state, userEmail.email);
+  if (!currentUser) currentUser = { email: "Loading...", id: null };
+  const userTasks = getTasksForUser(state, currentUser.id);
   const allTasks = getTasks(state).tasks;
   const ret = [];
   const taskMap = getTasksMap(state);
@@ -79,7 +80,10 @@ const mapStateToProps = state => {
     }
     ret.push(userTasks[i]);
   }
-  return { taskMap: weekStart => getTaskMapByProgress(ret, weekStart) };
+  return {
+    taskMap: weekStart => getTaskMapByProgress(ret, weekStart),
+    currentUser: currentUser
+  };
 };
 
 addons.setChannel(mockChannel());
@@ -272,7 +276,7 @@ class TaskApp extends Component {
       start_date: this.state.weekStart.toISOString(),
       duration: 1,
       text: text,
-      owner_id: testUserId,
+      owner_id: this.props.currentUser.id,
       progress: 0,
       type: "task"
     };
@@ -310,6 +314,7 @@ class TaskApp extends Component {
     const isThisWeek = weekNumber == moment(today).week();
     return (
       <div>
+        <small>{this.props.currentUser.email}</small>
         <WeekScrollBar>
           <Button className="pull-left" onClick={() => this.incrementWeek(-1)}>
             &lt;

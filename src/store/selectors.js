@@ -14,6 +14,10 @@ export const getUserByEmail = (store, email) =>
     user => (user.email || "").toLowerCase() === email.toLowerCase()
   );
 
+export const getCurrentuser = store => {
+  return JSON.parse(JSON.stringify(store.tasks.currentUser));
+};
+
 export const getProjects = store =>
   JSON.parse(
     JSON.stringify(store.tasks.tasks.filter(task => task.type === "project"))
