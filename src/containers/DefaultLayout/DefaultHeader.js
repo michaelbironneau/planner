@@ -10,6 +10,8 @@ import {
 } from "@coreui/react";
 import logo from "../../assets/img/brand/logo.svg";
 import sygnet from "../../assets/img/brand/sygnet.svg";
+import { Button } from 'reactstrap';
+import firebase from 'firebase';
 
 const propTypes = {
   children: PropTypes.node
@@ -18,6 +20,21 @@ const propTypes = {
 const defaultProps = {};
 
 class DefaultHeader extends Component {
+  constructor(props){
+    super(props);
+    this.signOut = this.signOut.bind(this);
+  }
+  static contextTypes = {
+    router: PropTypes.object.isRequired
+  };
+
+  signOut(){
+    firebase.auth().signOut().then(() => {
+      this.context.router.history.push('login');
+    })
+  }
+
+
   render() {
     // eslint-disable-next-line
     const { children, ...attributes } = this.props;
@@ -46,7 +63,8 @@ class DefaultHeader extends Component {
           </NavItem>
         </Nav>
         <Nav className="ml-auto" navbar />
-        <AppAsideToggler className="d-md-down-none" />
+        <Button outline className="mr-1" onClick={() => this.signOut()}><i className="fa fa-sign-out mr-1"></i>Sign out</Button>
+        {/*<AppAsideToggler className="d-md-down-none" />*/}
         {/*<AppAsideToggler className="d-lg-none" mobile />*/}
       </React.Fragment>
     );
