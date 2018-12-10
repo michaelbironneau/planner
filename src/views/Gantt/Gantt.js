@@ -16,9 +16,9 @@ import {
   updateLink,
   deleteLink
 } from "../../store/actions";
-import { getTaskById } from "../../store/selectors";
+import { getTaskById, getUsers } from "../../store/selectors";
 
-let resources = [
+/* let resources = [
   { id: undefined, text: "Unassigned" },
   { id: "0", text: "Alexandra" },
   { id: "1", text: "Bob" },
@@ -29,15 +29,21 @@ let resources = [
   { id: "6", text: "George" },
   { id: "7", text: "Harry" },
   { id: "8", text: "Irene" }
-];
+]; */
 
 const mapStateToProps = state => {
   return {
-    getTaskById: taskId => getTaskById(state, taskId)
+    getTaskById: taskId => getTaskById(state, taskId),
+    resources: [{ id: null, text: "Unassigned" }, ...getUsers(state)]
   };
 };
 
 class Gantt extends Component {
+  constructor(props) {
+    super(props);
+    this.setColumns = this.setColumns.bind(this);
+  }
+
   setZoom(value) {
     switch (value) {
       case "Hours":
@@ -68,6 +74,7 @@ class Gantt extends Component {
 
   //Set columns from an array of names eg ["name", "duration", "owner"]
   setColumns(cols) {
+    const self = this;
     let c = [];
     cols.forEach(col => {
       switch (col) {
@@ -92,7 +99,7 @@ class Gantt extends Component {
               if (task.type === gantt.config.types.project) {
                 return "";
               }
-              var owner = resources.find(
+              var owner = self.props.resources.find(
                 item => item.id === task[gantt.config.resource_property]
               );
 
@@ -273,7 +280,7 @@ class Gantt extends Component {
         height: 22,
         map_to: "owner_id",
         type: "select",
-        options: resources.map(resource => {
+        options: this.props.resources.map(resource => {
           return { key: resource.id, label: resource.text };
         })
       }
