@@ -18,19 +18,6 @@ import {
 } from "../../store/actions";
 import { getTaskById, getUsers } from "../../store/selectors";
 
-/* let resources = [
-  { id: undefined, text: "Unassigned" },
-  { id: "0", text: "Alexandra" },
-  { id: "1", text: "Bob" },
-  { id: "2", text: "Charlie" },
-  { id: "3", text: "Dominic" },
-  { id: "4", text: "Eugene" },
-  { id: "5", text: "Fred" },
-  { id: "6", text: "George" },
-  { id: "7", text: "Harry" },
-  { id: "8", text: "Irene" }
-]; */
-
 const mapStateToProps = state => {
   return {
     getTaskById: taskId => getTaskById(state, taskId),
@@ -140,6 +127,7 @@ class Gantt extends Component {
   }
 
   initGanttEvents() {
+    const self = this;
     if (gantt.ganttEventsInitialized) {
       return;
     }
@@ -151,7 +139,7 @@ class Gantt extends Component {
     });
 
     gantt.attachEvent("onAfterTaskAdd", (id, task) => {
-      console.log("Add", task);
+      //console.log("Add", task);
       if (task.start_date || task.unscheduled) {
         const immutableTask = JSON.parse(
           JSON.stringify(this.stripHiddenProps(task))
@@ -166,9 +154,10 @@ class Gantt extends Component {
 
     gantt.attachEvent("onAfterTaskUpdate", (id, task) => {
       const immutableTask = JSON.parse(JSON.stringify(task));
-      console.log("Update", this.stripHiddenProps(immutableTask));
+      //console.log("Update", this.stripHiddenProps(immutableTask));
       //check if to insert or update
-      if (this.props.getTaskById(id)) {
+
+      if (self.props.tasks.data.find(f => f.id === id)) {
         //update
         this.props.updateTask(this.stripHiddenProps(immutableTask));
       } else {
@@ -178,7 +167,7 @@ class Gantt extends Component {
           .createTask(this.stripHiddenProps(immutableTask))
           .then(newID => {
             //console.log("Changing ID", oldID, newID);
-            //gantt.changeTaskId(oldID, newID);
+            //gantt.changeTaskId(oldID, newID);g
           });
       }
       //console.log("Update", task, JSON.parse(JSON.stringify(task)));
@@ -242,7 +231,6 @@ class Gantt extends Component {
   }
 
   componentDidUpdate() {
-    //console.log("Updated", JSON.parse(JSON.stringify(this.props.tasks)));
     //gantt.init(this.ganttContainer);
     //gantt.unselectTask();
     gantt.clearAll();

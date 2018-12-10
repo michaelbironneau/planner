@@ -24,7 +24,13 @@ export const getProjects = store =>
   );
 
 export const getTaskById = (store, id) => {
-  return store.tasks.tasks.find(task => task.id === id);
+  const taskID = store.tasks.tasks.find(task => task.id === id);
+  if (!taskID)
+    console.warn(
+      "Could not find task with id " + id,
+      JSON.parse(JSON.stringify(store.tasks))
+    );
+  return taskID;
 };
 
 export const getUserById = (store, id) => {

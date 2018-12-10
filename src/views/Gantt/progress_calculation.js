@@ -46,7 +46,8 @@
 
   gantt.attachEvent("onAfterTaskDelete", function onAfterTaskDelete(id, task) {
     if (delTaskParent != gantt.config.root_id) {
-      gantt.batchUpdate(checkParents(delTaskParent));
+      //MB: Possibly interfering with Firebase ID swap
+      //gantt.batchUpdate(checkParents(delTaskParent));
     }
   });
 })();

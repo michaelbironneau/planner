@@ -44,9 +44,10 @@ class NewProject extends Component {
         .toISOString(),
       end_date: moment()
         .startOf("day")
+        .add(1, "day")
         .toISOString(),
       unscheduled: true,
-      owner_id: null,
+      owner_id: "null",
       progress: 0
     });
     this.setState({ tasks: [...this.state.tasks] });
@@ -65,26 +66,30 @@ class NewProject extends Component {
       if (this.state.tasks[i].text.length === 0) return;
     }
     try {
-      this.props.createProject({
-        project: newTask({
-          text: this.state.name,
-          type: "project",
-          parent: 0, //root
-          owner_id: null,
-          progress: 0,
-          duration: 0,
-          start_date: moment()
-            .startOf("day")
-            .toISOString(),
-          end_date: moment()
-            .startOf("day")
-            .toISOString(),
-          unscheduled: true
-        }),
-        tasks: this.state.tasks.map(task => newTask(task))
-      });
-      this.onResetProject();
-      this.props.history.push("/dashboard");
+      this.props
+        .createProject({
+          project: newTask({
+            text: this.state.name,
+            type: "project",
+            parent: 0, //root
+            owner_id: "null",
+            progress: 0,
+            duration: 1,
+            start_date: moment()
+              .startOf("day")
+              .toISOString(),
+            end_date: moment()
+              .startOf("day")
+              .add(1, "day")
+              .toISOString(),
+            unscheduled: true
+          }),
+          tasks: this.state.tasks.map(task => newTask(task))
+        })
+        .then(() => {
+          this.onResetProject();
+          this.props.history.push("/dashboard");
+        });
     } catch (e) {
       console.warn(e);
     }
@@ -109,6 +114,12 @@ class NewProject extends Component {
       return;
     }
     this.state.tasks[index].duration = newDuration;
+    this.state.tasks[index].end_date = moment(
+      this.state.tasks[index].start_date
+    )
+      .startOf("day")
+      .add(newDuration, "day")
+      .toISOString();
     this.setState({ tasks: [...this.state.tasks] });
   }
 
