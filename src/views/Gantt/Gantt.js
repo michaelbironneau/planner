@@ -71,7 +71,7 @@ class Gantt extends Component {
     cols.forEach(col => {
       switch (col) {
         case "text":
-          c.push({ name: "text", tree: true, width: 200, resize: true });
+          c.push({ name: "text", tree: true, width: 330, resize: true });
           break;
         case "start_date":
           c.push({
@@ -246,7 +246,8 @@ class Gantt extends Component {
 
   render() {
     this.setZoom(this.props.zoom);
-    this.setColumns(["text", "start_date", "owner", "duration", "add"]);
+    //this.setColumns(["text", "start_date", "owner", "duration", "add"]);
+    this.setColumns(["text", "owner", "duration", "add"]);
     gantt.config.highlight_critical_path = true;
     //gantt.config.show_slack = true;
     //gantt.config.autosize = "xy";

@@ -24,6 +24,11 @@ import ReactToPrint from "react-to-print";
 
 import * as moment from "moment";
 
+const round = number => {
+  console.log(0.01 * Math.round(number * 100));
+  return 0.01 * Math.round(number * 100);
+};
+
 Array.range = (start, end) =>
   Array.from({ length: end - start + 1 }, (v, k) => k + start);
 
@@ -58,7 +63,7 @@ class Projects extends Component {
         if (weekNumber === null || s.weekStart === weekNumber) ret += s[key];
       });
     });
-    return ret;
+    return round(ret);
   }
 
   reduceStatsByOwner(stats, weekNumber, ownerText, key) {
@@ -70,7 +75,7 @@ class Projects extends Component {
         ret += s[key];
       });
     });
-    return ret;
+    return round(ret);
   }
 
   getDistinctOwners(stats) {
@@ -203,13 +208,13 @@ class Projects extends Component {
                     return (
                       <td key={weekNumber}>
                         £
-                        {
+                        {round(
                           (
                             task.stats.find(
                               s => s.weekStart === weekNumber
                             ) || { internalCost: 0 }
                           ).internalCost
-                        }
+                        )}
                       </td>
                     );
                   })}
@@ -269,13 +274,13 @@ class Projects extends Component {
                     return (
                       <td key={weekNumber}>
                         £
-                        {
+                        {round(
                           (
                             task.stats.find(
                               s => s.weekStart === weekNumber
                             ) || { externalCost: 0 }
                           ).externalCost
-                        }
+                        )}
                       </td>
                     );
                   })}
