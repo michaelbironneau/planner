@@ -8,10 +8,8 @@ import {
   AppNavbarBrand,
   AppSidebarToggler
 } from "@coreui/react";
-import logo from "../../assets/img/brand/logo.svg";
-import sygnet from "../../assets/img/brand/sygnet.svg";
-import { Button } from 'reactstrap';
-import firebase from 'firebase';
+import { Button } from "reactstrap";
+import firebase from "firebase";
 
 const propTypes = {
   children: PropTypes.node
@@ -20,7 +18,7 @@ const propTypes = {
 const defaultProps = {};
 
 class DefaultHeader extends Component {
-  constructor(props){
+  constructor(props) {
     super(props);
     this.signOut = this.signOut.bind(this);
   }
@@ -28,12 +26,14 @@ class DefaultHeader extends Component {
     router: PropTypes.object.isRequired
   };
 
-  signOut(){
-    firebase.auth().signOut().then(() => {
-      this.context.router.history.push('login');
-    })
+  signOut() {
+    firebase
+      .auth()
+      .signOut()
+      .then(() => {
+        this.context.router.history.push("login");
+      });
   }
-
 
   render() {
     // eslint-disable-next-line
@@ -42,10 +42,6 @@ class DefaultHeader extends Component {
     return (
       <React.Fragment>
         <AppSidebarToggler className="d-lg-none" display="md" mobile />
-        <AppNavbarBrand
-          full={{ src: logo, width: 89, height: 25, alt: "CoreUI Logo" }}
-          minimized={{ src: sygnet, width: 30, height: 30, alt: "CoreUI Logo" }}
-        />
         <AppSidebarToggler className="d-md-down-none" display="lg" />
 
         <Nav className="d-md-down-none" navbar>
@@ -63,7 +59,9 @@ class DefaultHeader extends Component {
           </NavItem>
         </Nav>
         <Nav className="ml-auto" navbar />
-        <Button outline className="mr-1" onClick={() => this.signOut()}><i className="fa fa-sign-out mr-1"></i>Sign out</Button>
+        <Button outline className="mr-1" onClick={() => this.signOut()}>
+          <i className="fa fa-sign-out mr-1" />Sign out
+        </Button>
         {/*<AppAsideToggler className="d-md-down-none" />*/}
         {/*<AppAsideToggler className="d-lg-none" mobile />*/}
       </React.Fragment>
