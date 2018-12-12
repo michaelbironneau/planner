@@ -17,7 +17,7 @@ import {
 import { setTaskProgress, createTask } from "../../store/actions";
 import { connect } from "react-redux";
 import * as moment from "moment";
-
+import { getEndDate } from "../../store/endDate";
 const today = moment();
 
 const getTaskMapByProgress = (tasks, weekStart) => {
@@ -37,21 +37,15 @@ const getTaskMapByProgress = (tasks, weekStart) => {
 };
 
 const isTaskInCurrentWeek = (task, weekStart) => {
-  const weekEnd = weekStart.clone().add(1, "week");
+  const weekEnd = weekStart.clone().add(5, "days");
   //task starts after week end
   if (moment(task.start_date).isAfter(weekEnd)) {
     return false;
   }
   //task ends before week start
-  if (
-    moment(task.start_date)
-      .clone()
-      .add(task.duration, "days")
-      .isBefore(weekStart)
-  ) {
+  if (moment(getEndDate(task)).isBefore(weekStart)) {
     return false;
   }
-
   return true;
 };
 
