@@ -35,7 +35,7 @@ class DefaultLayout extends Component {
     let self = this;
     firebase.auth().onAuthStateChanged(function(user) {
       if (!user) {
-        this.context.router.history.push("login");
+        self.context.router.history.push("login");
       } else {
         console.log("User logged in", user.email);
         self.props.dispatch(setCurrentUser({ email: user.email }));

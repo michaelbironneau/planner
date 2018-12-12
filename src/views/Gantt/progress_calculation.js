@@ -108,7 +108,8 @@
     } else {
       return {
         progress: totalDone / totalToDo,
-        duration: dateDiffInDays(earliestStartDate, latestEndDate),
+        //duration: dateDiffInDays(earliestStartDate, latestEndDate),
+        duration: totalDuration,
         start_date: earliestStartDate,
         end_date: latestEndDate
       };

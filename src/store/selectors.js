@@ -49,12 +49,7 @@ const isTaskBetween = (task, start, finish) => {
   if (moment(task.start_date).isAfter(finish)) {
     return false;
   }
-  if (
-    moment(task.start_date)
-      .clone()
-      .add(task.duration, "days")
-      .isBefore(start)
-  ) {
+  if (moment(getEndDate(task)).isBefore(start)) {
     return false;
   }
 
@@ -87,7 +82,6 @@ export const getUserWorkload = (store, start, finish) => {
   const ret = {};
 
   const tasks = getAllChildTasks(store, start, finish);
-
   tasks.forEach(task => {
     if (ret[task.owner_id] === undefined) {
       ret[task.owner_id] = getWorkloadInPeriod(
