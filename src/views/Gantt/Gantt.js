@@ -31,6 +31,11 @@ class Gantt extends Component {
     this.setColumns = this.setColumns.bind(this);
   }
 
+  componentWillUnmount() {
+    //console.log("Unmounted");
+    gantt.detachAllEvents();
+  }
+
   setZoom(value) {
     switch (value) {
       case "Hours":
@@ -128,11 +133,6 @@ class Gantt extends Component {
 
   initGanttEvents() {
     const self = this;
-    if (gantt.ganttEventsInitialized) {
-      return;
-    }
-    gantt.ganttEventsInitialized = true;
-
     gantt.attachEvent("onLightboxSave", function(id, task, is_new) {
       task.unscheduled = !task.start_date;
       return true;
@@ -142,10 +142,10 @@ class Gantt extends Component {
       //console.log("Add", task);
       if (task.start_date || task.unscheduled) {
         const immutableTask = JSON.parse(
-          JSON.stringify(this.stripHiddenProps(task))
+          JSON.stringify(self.stripHiddenProps(task))
         );
         const oldID = task.id;
-        this.props.createTask(immutableTask).then(newID => {
+        self.props.createTask(immutableTask).then(newID => {
           //console.log("Changing ID", oldID, newID);
           //gantt.changeTaskId(oldID, newID);
         });
@@ -154,17 +154,17 @@ class Gantt extends Component {
 
     gantt.attachEvent("onAfterTaskUpdate", (id, task) => {
       const immutableTask = JSON.parse(JSON.stringify(task));
-      //console.log("Update", this.stripHiddenProps(immutableTask));
+      //console.log("Update", self.stripHiddenProps(immutableTask));
       //check if to insert or update
-
+      //console.log("Props", JSON.parse(JSON.stringify(self.props.tasks.data)));
       if (self.props.tasks.data.find(f => f.id === id)) {
         //update
-        this.props.updateTask(this.stripHiddenProps(immutableTask));
+        self.props.updateTask(self.stripHiddenProps(immutableTask));
       } else {
         //insert
         const oldID = task.id;
-        this.props
-          .createTask(this.stripHiddenProps(immutableTask))
+        self.props
+          .createTask(self.stripHiddenProps(immutableTask))
           .then(newID => {
             //console.log("Changing ID", oldID, newID);
             //gantt.changeTaskId(oldID, newID);g
@@ -225,6 +225,7 @@ class Gantt extends Component {
     this.initGanttEvents();
     //console.log("Mounted", JSON.parse(JSON.stringify(this.props.tasks)));
     gantt.init(this.ganttContainer);
+    gantt.clearAll();
     gantt.parse(
       this.parseDatesInTasks(JSON.parse(JSON.stringify(this.props.tasks)))
     );
@@ -232,6 +233,7 @@ class Gantt extends Component {
 
   componentDidUpdate() {
     //gantt.init(this.ganttContainer);
+    //console.log("Update", JSON.parse(JSON.stringify(this.props.tasks)));
     //gantt.unselectTask();
     gantt.clearAll();
     gantt.resetLightbox();

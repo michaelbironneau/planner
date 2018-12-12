@@ -17,8 +17,12 @@ import { createProject } from "../../store/actions";
 import { connect } from "react-redux";
 import { newTask } from "../../models/task";
 import * as moment from "moment";
+import PropTypes from "prop-types";
 
 class NewProject extends Component {
+  static contextTypes = {
+    router: PropTypes.object.isRequired
+  };
   constructor(props) {
     super(props);
     this.state = {
@@ -88,7 +92,7 @@ class NewProject extends Component {
         })
         .then(() => {
           this.onResetProject();
-          this.props.history.push("/dashboard");
+          this.context.router.history.push("dashboard");
         });
     } catch (e) {
       console.warn(e);
