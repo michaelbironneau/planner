@@ -45,10 +45,6 @@ const ScrollContainer = styled("div")`
 const Container = styled("div")``;
 /* stylelint-enable */
 
-const orderByDate = tasks => {
-  return tasks.sort((a, b) => new Date(a.start_date) - new Date(b.start_date));
-};
-
 class InnerTaskList extends React.Component {
   shouldComponentUpdate(nextProps) {
     if (nextProps.tasks !== this.props.tasks) {
@@ -59,7 +55,7 @@ class InnerTaskList extends React.Component {
   }
 
   render() {
-    return orderByDate(this.props.tasks).map((task, index) => (
+    return this.props.tasks.map((task, index) => (
       <Draggable key={task.id} draggableId={task.id} index={index}>
         {(dragProvided, dragSnapshot) => (
           <TaskItem

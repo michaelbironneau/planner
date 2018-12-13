@@ -20,6 +20,10 @@ import * as moment from "moment";
 import { getEndDate } from "../../store/endDate";
 const today = moment();
 
+const orderByDate = tasks => {
+  return tasks.sort((a, b) => new Date(a.start_date) - new Date(b.start_date));
+};
+
 const getTaskMapByProgress = (tasks, weekStart) => {
   const ret = { todo: [], inprog: [], done: [] };
   for (var i = 0; i < tasks.length; i++) {
@@ -33,7 +37,11 @@ const getTaskMapByProgress = (tasks, weekStart) => {
       ret.done.push(tasks[i]);
     }
   }
-  return ret;
+  return {
+    todo: orderByDate(ret.todo),
+    inprog: orderByDate(ret.inprog),
+    done: orderByDate(ret.done)
+  };
 };
 
 const isTaskInCurrentWeek = (task, weekStart) => {
