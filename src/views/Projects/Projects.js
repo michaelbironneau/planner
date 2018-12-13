@@ -29,8 +29,33 @@ const round = number => {
   return 0.01 * Math.round(number * 100);
 };
 
-Array.range = (start, end) =>
-  Array.from({ length: end - start + 1 }, (v, k) => k + start);
+function weeksInYear(year) {
+  return Math.max(
+    moment(new Date(year, 11, 31)).isoWeek(),
+    moment(new Date(year, 11, 31 - 7)).isoWeek()
+  );
+}
+
+const weeksInRange = (start, finish) => {
+  if (!start || !finish) return [];
+  if (start.week() >= finish.week()) {
+    //straddling two years.
+    const lastWeekNumber = weeksInYear(start.year());
+    const weeksInFirstYear = Array.from(
+      { length: lastWeekNumber - start.week() + 1 },
+      (v, k) => k + start.week()
+    );
+    const weeksInSecondYear = Array.from(
+      { length: finish.week() },
+      (v, k) => k + 1
+    );
+    return [...weeksInFirstYear, ...weeksInSecondYear];
+  }
+  return Array.from(
+    { length: finish.week() - start.week() + 1 },
+    (v, k) => k + start.week()
+  );
+};
 
 const mapStateToProps = state => {
   return {
@@ -103,8 +128,8 @@ class Projects extends Component {
   }
 
   renderResourceTable(stats) {
-    const startWeek = moment(stats.scheduling.start).week();
-    const endWeek = moment(stats.scheduling.finish).week();
+    const start = moment(stats.scheduling.start);
+    const finish = moment(stats.scheduling.finish);
     return (
       <div>
         <Table responsive hover>
@@ -117,7 +142,7 @@ class Projects extends Component {
             </tr>
             <tr>
               <th>&nbsp;</th>
-              {Array.range(startWeek, endWeek).map(weekNumber => {
+              {weeksInRange(start, finish).map(weekNumber => {
                 return <th key={weekNumber}>{weekNumber}</th>;
               })}
             </tr>
@@ -127,7 +152,7 @@ class Projects extends Component {
               return (
                 <tr key={ownerName}>
                   <td>{ownerName}</td>
-                  {Array.range(startWeek, endWeek).map(weekNumber => {
+                  {weeksInRange(start, finish).map(weekNumber => {
                     return (
                       <td key={weekNumber}>
                         {this.reduceStatsByOwner(
@@ -146,7 +171,7 @@ class Projects extends Component {
               <td className="text-right">
                 <em>Subtotals</em>
               </td>
-              {Array.range(startWeek, endWeek).map(weekNumber => {
+              {weeksInRange(start, finish).map(weekNumber => {
                 return (
                   <td key={weekNumber}>
                     <strong>
@@ -180,8 +205,8 @@ class Projects extends Component {
   }
 
   renderCostsTable(stats) {
-    const startWeek = moment(stats.scheduling.start).week();
-    const endWeek = moment(stats.scheduling.finish).week();
+    const start = moment(stats.scheduling.start);
+    const finish = moment(stats.scheduling.finish);
     return (
       <div>
         <Table responsive hover>
@@ -194,7 +219,7 @@ class Projects extends Component {
             </tr>
             <tr>
               <th>&nbsp;</th>
-              {Array.range(startWeek, endWeek).map(weekNumber => {
+              {weeksInRange(start, finish).map(weekNumber => {
                 return <th key={weekNumber}>{weekNumber}</th>;
               })}
             </tr>
@@ -204,7 +229,7 @@ class Projects extends Component {
               return (
                 <tr key={task.name}>
                   <td>{task.name}</td>
-                  {Array.range(startWeek, endWeek).map(weekNumber => {
+                  {weeksInRange(start, finish).map(weekNumber => {
                     return (
                       <td key={weekNumber}>
                         £
@@ -225,7 +250,7 @@ class Projects extends Component {
               <td className="text-right">
                 <em>Subtotals</em>
               </td>
-              {Array.range(startWeek, endWeek).map(weekNumber => {
+              {weeksInRange(start, finish).map(weekNumber => {
                 return (
                   <td key={weekNumber}>
                     <strong>
@@ -260,7 +285,7 @@ class Projects extends Component {
             </tr>
             <tr>
               <th>&nbsp;</th>
-              {Array.range(startWeek, endWeek).map(weekNumber => {
+              {weeksInRange(start, finish).map(weekNumber => {
                 return <th key={weekNumber}>{weekNumber}</th>;
               })}
             </tr>
@@ -270,7 +295,7 @@ class Projects extends Component {
               return (
                 <tr key={task.name}>
                   <td>{task.name}</td>
-                  {Array.range(startWeek, endWeek).map(weekNumber => {
+                  {weeksInRange(start, finish).map(weekNumber => {
                     return (
                       <td key={weekNumber}>
                         £
@@ -291,7 +316,7 @@ class Projects extends Component {
               <td className="text-right">
                 <em>Subtotals</em>
               </td>
-              {Array.range(startWeek, endWeek).map(weekNumber => {
+              {weeksInRange(start, finish).map(weekNumber => {
                 return (
                   <td key={weekNumber}>
                     <strong>
