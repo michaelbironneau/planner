@@ -88,11 +88,11 @@ class Task extends Component {
     task.external_cost = parseFloat(task.external_cost);
     if (isNaN(task.duration)) {
       console.warn("Invalid duration", task); //TODO: Error message
-      return;
+      task.duration = 1;
     }
     if (isNaN(task.external_cost)) {
       console.warn("Invalid external cost", task); //TODO: Error message
-      return;
+      task.external_cost = 0;
     }
     this.props.updateTask(task);
     this.context.router.history.goBack();
